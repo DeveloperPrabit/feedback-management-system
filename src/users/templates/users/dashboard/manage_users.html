@@ -1,0 +1,91 @@
+{% extends "admin_dashboard.html" %}
+
+{% block dashboard_content %}
+<!-- Content Area -->
+<div class="content-wrapper">
+    <!-- Add your dynamic content here -->
+    <div class="card">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <!-- Close Button -->
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="card-header">
+            <h5 class="card-title">Active Users</h5>
+            <div class="card-actions">
+                <a class="btn btn-primary" href="{% url 'users:add_user' %}">
+                    <i class="fas fa-plus"></i> Add New
+                </a>
+                <div class="search-box">
+                    <!-- Search Form -->
+                    <form method="get" action="{% url 'users:dashboard' %}">
+                        <input type="text" name="search" placeholder="Search users..." value="{{ search_query }}">
+                        <button type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample Data -->
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                {% if user.full_name %}
+                                    {{ user.full_name }}
+                                {% else %}
+                                    No Name Provided
+                                {% endif %}
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.user_type }}</td>
+                            <td>
+                                <span class="status-badge {{ user.status }}">
+                                {% if user.is_active %} Active {% else %} Not active {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form action="{% url 'users:delete_user' user.uuid %}" method="POST" style="display: inline-block;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No users found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock dashboard_content %}

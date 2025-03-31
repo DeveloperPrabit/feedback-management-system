@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Dashboard</title>
+        <link rel="stylesheet" href="{% static 'css/user_dashboard.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+        {% block css %}{% endblock css %}
+    </head>
+    
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="user-info">
+                <div class="conta">
+                    <h3 style="text-decoration: underline; height: 10vh;">Dashboard</h3>
+                </div>
+                {% if request.user.profile_picture %}
+                    <img src="{{ request.user.profile_picture.url }}" alt="Profile Photo" class="profile-photo">
+                {% else %}
+                    <img src="{% static 'images/my.jpg' %}" alt="Default Profile" class="profile-photo">
+                {% endif %}
+                <p>{{ request.user.email }}</p>
+            </div>
+
+            <nav>
+                <a href="/" class="menu-item active"><i class="fas fa-home"></i> Dashboard</a>
+            </nav>
+
+            <div class="settings-section">
+                <h4>Settings</h4>
+                <a href="{% url 'users:profile' %}" class="menu-item"><i class="fas fa-user"></i> View Profile</a>
+                <a href="{% url 'users:change_password' %}" class="menu-item"><i class="fas fa-lock"></i> Change Password</a>
+                <a href="{% url 'users:profile_edit' %}" class="menu-item"><i class="fas fa-camera"></i> Change Profile Photo</a>
+                <a href="" class="menu-item"><i class="fas fa-user"></i>
+                </i>Add Tenant</a>
+                <a href="" class="menu-item"><i class="fas fa-plus-circle"></i>
+                </i>Add Invoice</a>
+                <a href="" class="menu-item"><i class="fas fa-file-invoice"></i>
+                </i>View List</a>
+                <a href="{% url 'users:logout' %}" class="menu-item logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+        {% block dashboard_content %}
+        {% endblock dashboard_content %}
+    </div>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends 'user_dashboard.html' %}
+{% load static %}
+
+{% block css %}
+<style>
+    .centered-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: hsl(0, 78%, 2%);
+    }
+</style>
+{% endblock css %}
+
+{% block dashboard_content %}
+
+<div class="centered-container">
+    <div class="card shadow-lg p-4 d-flex justify-content-center align-items-center" style="max-width: 500px; width: 100%; border-radius: 10px;">
+        <h2 class="text-center mb-4">Edit Profile</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success text-center">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="w-100">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="profile_photo" class="form-label fw-bold">Upload New Profile Photo</label>
+                <input type="file" name="profile_picture" id="profile_photo" class="form-control">
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary px-4">Update Photo</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock dashboard_content %}

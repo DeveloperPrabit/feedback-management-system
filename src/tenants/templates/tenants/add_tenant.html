@@ -1,0 +1,29 @@
+{% extends "admin_dashboard.html" %}
+{% load static %}
+
+{% block css %}
+{% endblock css %}
+
+{% block dashboard_content %}
+<div class="container mt-4">
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <!-- Close Button -->
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success form-control mt-3">
+            <!-- Font Awesome Icon for Save Button -->
+            <i class="fas fa-save me-2"></i>Save Tenant
+        </button>
+    </form>
+</div>
+{% endblock dashboard_content %}

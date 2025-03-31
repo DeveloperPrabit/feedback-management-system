@@ -1,0 +1,27 @@
+{% extends "user_dashboard.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/view_profile.css' %}">
+{% endblock css %}
+
+{% block dashboard_content %}
+<div class="container" style="display:flex; justify-content: center; min-height: 100vh; ">
+    <div class="col-md-6">
+        <div class="card profile-card shadow-lg text-white">
+            <div class="card-header text-center">
+                <h2>Profile</h2>
+            </div>
+            <div class="card-body">
+                <div class="profile-info">
+                    <p><strong>Full Name:</strong> {{ user.full_name }}</p>
+                    <p><strong>Address:</strong> {{ user.full_address }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Mobile:</strong> {{ user.mobile }}</p>
+                    <p><strong>Joined Date:</strong> {{ user.date_joined }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock dashboard_content %}

@@ -1,3 +1,300 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views import View
+from django.urls import reverse_lazy
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.auth import get_user_model
+from django.core.files.storage import default_storage
+from django.db.models import Q
+import requests
+from .forms import (
+    UserLoginForm,
+    CustomPasswordChangeForm,
+)
+from .models import UserType
 
 # Create your views here.
+
+User = get_user_model()
+
+class UserRegisterView(View):
+    template_name = 'users/register.html'
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect("users:dashboard")
+        # Check if the user is already authenticated
+        return render(request, self.template_name)
+    
+    def post(self, request):
+        email = request.POST.get('email')
+        full_name = request.POST.get('full_name')
+        password = request.POST.get('password')
+        full_address = request.POST.get('full_address')
+        mobile = request.POST.get('mobile')
+        terms = request.POST.get('terms')
+
+        errors = []
+
+        # Validate required fields
+        if not all([full_name, full_address, email, mobile, password, terms]):
+            errors.append("All fields are required.")
+
+        if not mobile.isdigit() or len(mobile) != 10:
+            errors.append("Enter a valid 10-digit mobile number.")
+
+
+        # Validate unique email
+        if User.objects.filter(email=email).exists():
+            errors.append("This email is already registered.")
+
+        # Validate password length
+        if len(password) < 8:
+            errors.append("Password must be at least 8 characters long.")
+
+        if not terms:
+            messages.error(request, "You must accept the terms and conditions.")
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            # Send back the filled data
+            return render(request, self.template_name, {
+                "email": email,
+                "full_name": full_name,
+                "full_address": full_address,
+                "mobile": mobile,
+            })
+        
+        # Verify Google reCAPTCHA
+        recaptcha_response = request.POST.get("g-recaptcha-response")
+        recaptcha_secret = "6LfswtgZAAAAABX9gbLqe-d97qE2g1JP8oUYritJ"  # Replace with actual reCAPTCHA secret key
+        recaptcha_verify_url = "https://www.google.com/recaptcha/api/siteverify"
+        recaptcha_data = {"secret": recaptcha_secret, "response": recaptcha_response}
+        recaptcha_result = requests.post(recaptcha_verify_url, data=recaptcha_data).json()
+
+        # if not recaptcha_result.get("success"):
+        #     messages.error(request, "Invalid reCAPTCHA. Please try again.")
+        #     return redirect("users:register")
+        
+        # Create user
+        user = User.objects.create(
+            email=email,
+            full_name=full_name,
+            full_address=full_address,
+            mobile=mobile,
+        )
+        user.set_password(password)
+        user.save()
+
+        messages.success(request, "Registration successful. You can now log in.")
+        return redirect("users:login")
+
+
+class UserLoginView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect("users:dashboard")
+        form = UserLoginForm()
+        return render(request, 'users/login.html', {'form': form})
+    
+    def post(self, request):
+        form = UserLoginForm(request, data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect("users:dashboard")
+            else:
+                messages.error(request, "Invalid email or password.")
+        else:
+            messages.error(request, "Invalid form submission.")
+        return render(request, 'users/login.html', {'form': form})
+
+class UserLogoutView(View):
+    def get(self, request):
+        logout(request)
+        messages.success(request, "You have been logged out.")
+        return redirect("users:login")
+
+    def post(self, request):
+        logout(request)
+        messages.success(request, "You have been logged out.")
+        return redirect("users:login")
+
+@method_decorator(login_required, name='dispatch')
+class PasswordChangeView(View):
+    def get(self, request):
+        form = CustomPasswordChangeForm(user=request.user)
+        if request.user.user_type == UserType.ADMIN:
+            return render(request, 'users/admin_password_change.html', {'form': form})
+        return render(request, 'users/change_password.html', {'form': form})
+    
+    def post(self, request):
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Password changed successfully.")
+            return redirect("users:login")
+        else:
+            messages.error(request, "Invalid form submission.")
+        if request.user.user_type == UserType.ADMIN:
+            return render(request, 'users/admin_password_change.html', {'form': form})
+        # If the user is not an admin, render the normal password change page
+        return render(request, 'users/change_password.html', {'form': form})
+
+@method_decorator(login_required, name='dispatch')
+class DashboardView(View):
+    def get(self, request):
+        search_query = request.GET.get('search', '')
+        if request.user.user_type == UserType.ADMIN:
+            if search_query:
+                users = User.objects.filter( 
+                    Q(email__icontains=search_query) | 
+                    Q(full_name__icontains=search_query) | 
+                    Q(mobile__icontains=search_query)
+                )
+            else:
+                users = User.objects.all()
+            context = {
+                'users': users,
+                'search_query': search_query,
+            }
+            return render(request, 'users/dashboard/admin_index.html', context)
+        return render(request, 'users/dashboard/user_index.html')
+    
+    def post(self, request):
+        pass
+
+
+@method_decorator(login_required, name='dispatch')
+class ProfileView(View):
+    template_name = 'users/profile.html'
+
+    def get(self, request):
+        user = request.user
+        if request.user.user_type == UserType.ADMIN:
+            return render(request, 'users/dashboard/admin_index.html')
+        return render(request, self.template_name, {'user': user})
+    
+
+@method_decorator(login_required, name='dispatch')
+class UpdateProfileView(View):
+
+    template_name = 'users/update_profile.html'
+
+    def get(self, request):
+        user = request.user
+        if request.user.user_type == UserType.ADMIN:
+            return render(request, 'users/dashboard/admin_index.html')
+        return render(request, self.template_name, {'user': user})
+    
+
+    def post(self, request):
+        user = request.user
+        profile_picture = request.FILES.get('profile_picture')
+
+        if profile_picture:
+            if user.profile_picture:
+                default_storage.delete(user.profile_picture.path)
+            user.profile_picture = profile_picture
+            user.save()
+            return redirect("users:dashboard")
+        else:
+            messages.error(request, "No profile picture uploaded.")
+            return render(request, self.template_name, {'user': user})
+        
+
+@method_decorator(login_required, name='dispatch')
+class UserDeleteView(View):
+
+    def post(self, request, user_uuid):
+        user = User.objects.get(uuid=user_uuid)
+
+        if user and request.user.user_type == UserType.ADMIN:
+            # Check if the user is not the same as the logged-in user
+            if user != request.user:
+                user.delete()
+        else:
+            messages.error(request, "User not found.")
+
+        return redirect("users:manage_users")
+    
+@method_decorator(login_required, name='dispatch')
+class AddUserView(View):
+    template_name = 'users/add_user.html'
+
+    def get(self, request):
+        if request.user.user_type != UserType.ADMIN:
+            messages.error(request, "You do not have permission to access this page.")
+            return redirect("users:dashboard")
+        return render(request, self.template_name)
+    
+    def post(self, request):
+        if request.user.user_type != UserType.ADMIN:
+            messages.error(request, "You do not have permission to access this page.")
+            return redirect("users:dashboard")
+        # Get form data
+        email = request.POST.get('email')
+        full_name = request.POST.get('full_name')
+        password = request.POST.get('password')
+        full_address = request.POST.get('full_address')
+        mobile = request.POST.get('mobile')
+
+        errors = []
+
+        # Validate required fields
+        if not all([full_name, full_address, email, mobile, password]):
+            errors.append("All fields are required.")
+
+        if not mobile.isdigit() or len(mobile) != 10:
+            errors.append("Enter a valid 10-digit mobile number.")
+
+
+        # Validate unique email
+        if User.objects.filter(email=email).exists():
+            errors.append("This email is already registered.")
+
+        # Validate password length
+        if len(password) < 8:
+            errors.append("Password must be at least 8 characters long.")
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            # Send back the filled data
+            return render(request, self.template_name, {
+                "email": email,
+                "full_name": full_name,
+                "full_address": full_address,
+                "mobile": mobile,
+            })
+        
+        # Create user
+        user = User.objects.create(
+            email=email,
+            full_name=full_name,
+            full_address=full_address,
+            mobile=mobile,
+        )
+        user.set_password(password)
+        user.save()
+
+        messages.success(request, "User added successfully.")
+        return redirect("users:manage_users")
+
+
+class ManageUsersView(View):
+    template_name = 'users/dashboard/manage_users.html'
+
+    def get(self, request):
+        if request.user.user_type != UserType.ADMIN:
+            messages.error(request, "You do not have permission to access this page.")
+            return redirect("users:dashboard")
+        users = User.objects.all()
+        return render(request, self.template_name, {'users': users})
+    
+

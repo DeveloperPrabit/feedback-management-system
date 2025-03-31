@@ -1,0 +1,36 @@
+{% extends "admin_dashboard.html" %}
+{% load static %}
+
+{% block css %}
+{% endblock css %}
+
+{% block dashboard_content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Invoice List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Invoice Number</th>
+                    <th>Tenant</th>
+                    <th>Date Issued</th>
+                    <th>Due Date</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                    <tr>
+                        <td>{{ invoice.invoice_number }}</td>
+                        <td>{{ invoice.tenant.name }}</td>
+                        <td>{{ invoice.date_issued }}</td>
+                        <td>{{ invoice.due_date }}</td>
+                        <td>${{ invoice.total_amount }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock dashboard_content %}
