@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-header">
+        <h1>Invoice</h1>
+        <p>Invoice No: {{ invoice.serial_number }}</p>
+        <p>Date: {{ invoice.date|date:"M d, Y" }}</p>
+    </div>
+
+    <h3>Tenant Information</h3>
+    <p>Name: {{ invoice.tenant.name }}</p>
+    <p>Email: {{ invoice.tenant.email }}</p>
+    <p>Mobile: {{ invoice.tenant.mobile }}</p>
+    <p>Address: {{ invoice.tenant.address }}</p>
+
+    <h3>Details</h3>
+    <table>
+        <tr>
+            <th>Item</th>
+            <th>Amount</th>
+        </tr>
+        <tr>
+            <td>Rent Amount</td>
+            <td>${{ invoice.rent_amount }}</td>
+        </tr>
+        <tr>
+            <td>Parking Fee</td>
+            <td>${{ invoice.parking_fee|default:"0.00" }}</td>
+        </tr>
+        <tr>
+            <td>Electricity Fee</td>
+            <td>${{ invoice.electricity_fee|default:"0.00" }}</td>
+        </tr>
+        <tr>
+            <td>Security Fee</td>
+            <td>${{ invoice.security_fee|default:"0.00" }}</td>
+        </tr>
+        <tr>
+            <td>Discount</td>
+            <td>-${{ invoice.discount|default:"0.00" }}</td>
+        </tr>
+        <tr>
+            <td>Tax</td>
+            <td>${{ invoice.tax|default:"0.00" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Grand Total</strong></td>
+            <td><strong>${{ invoice.grand_total }}</strong></td>
+        </tr>
+    </table>
+
+    <h3>Bank Information</h3>
+    <p>Bank Name: {{ invoice.bank_name|default:"-" }}</p>
+    <p>Account Number: {{ invoice.account_number|default:"-" }}</p>
+    <p>Account Name: {{ invoice.account_name|default:"-" }}</p>
+
+    <h3>Signatures</h3>
+    <p>Owner Signature: {{ invoice.owner_signature|default:"-" }}</p>
+    <p>Tenant Signature: {{ invoice.tenant_signature|default:"-" }}</p>
+</body>
+</html>

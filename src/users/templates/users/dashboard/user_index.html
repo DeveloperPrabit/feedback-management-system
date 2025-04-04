@@ -1,12 +1,65 @@
 {% extends "user_dashboard.html" %}
 
 {% block dashboard_content %}
-<div class="main-content">
-    <h1>User Dashboard</h1>
+<div class="dashboard-cards">
+    <div class="container-fluid text-light">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">Dashboard</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <!-- Total No. of Tenants -->
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="small-box bg-blue">
+                    <h2>{{tenants}}</h2>
+                    <p>Total No. of Tenants</p>
+                    <div class="icon">🏢</div>
+                    <a href="{% url 'tenants:view_tenants' %}" class="small-box-footer">More info</a>
+                </div>
+            </div>
 
-    <div class="settings-container">
-        <h2>Settings</h2>
-        <div>hi</div>
+
+            <!-- Total No. of Invoices -->
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="small-box bg-yellow">
+                    <h2>{{ invoices }}</h2>
+                    <p>Total No. of Invoices</p>
+                    <div class="icon">📄</div>
+                    <a href="{% url 'invoices:view_invoices' %}" class="small-box-footer">More info</a>
+                </div>
+            </div>
+
+            <!-- Total No. of Paid Invoices -->
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="small-box bg-red">
+                    <h2>{{ paid_invoices }}</h2>
+                    <p>Total No. of Paid Invoices</p>
+                    <div class="icon">💰</div>
+                    <a href="#" class="small-box-footer">More info</a>
+                </div>
+            </div>
+
+            <!-- Total No. of Unpaid Invoices -->
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="small-box bg-purple">
+                    <h2>{{ unpaid_invoices }}</h2>
+                    <p>Total No. of Unpaid Invoices</p>
+                    <div class="icon">🚫</div>
+                    <a href="#" class="small-box-footer">More info</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+    
 {% endblock dashboard_content %}

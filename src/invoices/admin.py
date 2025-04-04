@@ -1,32 +1,14 @@
 from django.contrib import admin
-from .models import Invoice, RentInvoice
+from .models import Invoice
 # Register your models here.
+
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = ('__str__',)
-    search_fields = (
-        'invoice_number',
-        'tenant__name',
-        'tenant__email',
-    )
-    list_filter = ('status', 'tenant')
-    ordering = ('-date_issued',)
-    date_hierarchy = 'date_issued'
     list_per_page = 20
-    list_select_related = ('tenant',)
 
-    fieldsets = (
-        (None, {
-            'fields': ('invoice_number', 'tenant', 'date_due', 'total_amount', 'status')
-        }),
-    )
-
-
-@admin.register(RentInvoice)
-class RentInvoiceAdmin(admin.ModelAdmin):
-    list_display = ('__str__',)
-    list_per_page = 20
+    list_filter = ('status',)
 
     fieldsets = (
         (None, {
@@ -34,7 +16,7 @@ class RentInvoiceAdmin(admin.ModelAdmin):
                 'serial_number',
                 'rent_month',
                 'date',
-                'tenant_name',
+                'tenant',
                 'house_number',
                 'flat_number',
                 'room_no',
@@ -52,6 +34,7 @@ class RentInvoiceAdmin(admin.ModelAdmin):
                 'account_name',
                 'owner_signature',
                 'tenant_signature',
+                'status'
             )
         }),
     )

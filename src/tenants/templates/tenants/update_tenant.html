@@ -1,0 +1,28 @@
+{% extends "admin_dashboard.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+{% endblock css %}
+
+{% block dashboard_content %}
+<div class="signup-container mt-2" style="width: 100%; max-width: 800px; margin: auto;">
+    <h2>Edit Tenant</h2>
+    <form method="POST">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="d-flex align-items-center mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label me-1" style="width: 200px;">{{ field.label }}:</label>
+                <div class="flex-grow-1">
+                    {{ field }}
+                </div>
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">Update Tenant</button>
+        <a href="{% url 'tenants:view_tenants' %}" class="btn btn-secondary mt-2 form-control">Cancel</a>
+    </form>
+</div>
+
+{% endblock dashboard_content %}

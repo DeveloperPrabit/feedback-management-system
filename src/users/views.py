@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic import UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -12,8 +14,11 @@ import requests
 from .forms import (
     UserLoginForm,
     CustomPasswordChangeForm,
+    EditUserForm
 )
 from .models import UserType
+from tenants.models import Tenant
+from invoices.models import Invoice
 
 # Create your views here.
 
@@ -149,6 +154,29 @@ class PasswordChangeView(View):
 @method_decorator(login_required, name='dispatch')
 class DashboardView(View):
     def get(self, request):
+        if request.user.user_type == UserType.ADMIN:
+            users = User.objects.all().count()
+            tenants = Tenant.objects.all().count()
+            invoices = Invoice.objects.all().count()
+            paid_invoices = Invoice.objects.filter(status='Paid').count()
+            unpaid_invoices = Invoice.objects.filter(status='Unpaid').count()
+            context = {
+                'users': users,
+                'tenants': tenants,
+                'invoices': invoices,
+                'paid_invoices': paid_invoices,
+                'unpaid_invoices': unpaid_invoices,
+            }
+            return render(request, 'users/dashboard/admin_index.html', context)
+        return render(request, 'users/dashboard/user_index.html')
+    
+    def post(self, request):
+        pass
+
+
+@method_decorator(login_required, name='dispatch')
+class ViewUsersView(View):
+    def get(self, request):
         search_query = request.GET.get('search', '')
         if request.user.user_type == UserType.ADMIN:
             if search_query:
@@ -156,14 +184,14 @@ class DashboardView(View):
                     Q(email__icontains=search_query) | 
                     Q(full_name__icontains=search_query) | 
                     Q(mobile__icontains=search_query)
-                )
+                ).exclude(uuid=request.user.uuid)
             else:
-                users = User.objects.all()
+                users = User.objects.all().exclude(uuid=request.user.uuid)
             context = {
                 'users': users,
                 'search_query': search_query,
             }
-            return render(request, 'users/dashboard/admin_index.html', context)
+            return render(request, 'users/dashboard/view_users.html', context)
         return render(request, 'users/dashboard/user_index.html')
     
     def post(self, request):
@@ -286,7 +314,7 @@ class AddUserView(View):
         messages.success(request, "User added successfully.")
         return redirect("users:manage_users")
 
-
+@method_decorator(login_required, name='dispatch')
 class ManageUsersView(View):
     template_name = 'users/dashboard/manage_users.html'
 
@@ -294,7 +322,27 @@ class ManageUsersView(View):
         if request.user.user_type != UserType.ADMIN:
             messages.error(request, "You do not have permission to access this page.")
             return redirect("users:dashboard")
-        users = User.objects.all()
+        
+        users = User.objects.all().exclude(uuid=request.user.uuid)
         return render(request, self.template_name, {'users': users})
     
 
+class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = User
+    template_name = 'users/update_user.html'
+    form_class = EditUserForm
+    success_url = reverse_lazy('users:manage_users')
+    context_object_name = 'user'
+    pk_url_kwarg = 'user_uuid'
+
+    def test_func(self):
+        user = self.get_object()
+        if self.request.user.user_type == UserType.ADMIN:
+            return True
+        return False
+    
+    def form_valid(self, form):
+        password = form.cleaned_data.get('password')
+        if password:
+            self.object.set_password(password)  # Set hashed password
+        return super().form_valid(form)

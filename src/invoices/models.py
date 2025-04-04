@@ -3,67 +3,8 @@ from django.db import models
 from rental_system.mixins import TimestampMixin
 from django.utils.translation import gettext_lazy as _
 from tenants.models import Tenant
-
-
-class Invoice(TimestampMixin):
-    uuid = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-        unique=True,  # Ensure NOT NULL
-    )
-    invoice_number = models.CharField(
-        _('invoice number'),
-        max_length=20,
-        unique=True,
-    )
-
-    tenant = models.ForeignKey(
-        Tenant,
-        on_delete=models.CASCADE,
-        related_name='%(class)s_invoices',
-        verbose_name=_('tenant'),
-    )
-
-    date_issued = models.DateField(
-        _('date issued'),
-        auto_now_add=True,
-    )
-
-    date_due = models.DateField(
-        _('date due'),
-        blank=True,
-        null=True,
-    )
-
-    total_amount = models.DecimalField(
-        _('total amount'),
-        max_digits=10,
-        decimal_places=2,
-    )
-
-    status = models.CharField(
-        _('status'),
-        max_length=20,
-        choices=[
-            ('paid', _('Paid')),
-            ('unpaid', _('Unpaid')),
-            ('overdue', _('Overdue')),
-        ],
-        default='unpaid',
-    )
-
-    def __str__(self):
-        return f"Invoice {self.invoice_number} for {self.tenant.name}"
-
-    class Meta:
-        verbose_name = _('invoice')
-        verbose_name_plural = _('invoices')
-        ordering = ['-date_issued']
     
-
-
-class RentInvoice(models.Model):
+class Invoice(TimestampMixin):
     uuid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4, 
@@ -82,8 +23,11 @@ class RentInvoice(models.Model):
 
     date = models.DateField()
 
-    tenant_name = models.CharField(
-        max_length=100
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name='invoices',
+        verbose_name=_('tenant')
     )
 
     house_number = models.CharField(
@@ -184,12 +128,22 @@ class RentInvoice(models.Model):
         null=True
     )
 
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('paid', _('Paid')),
+            ('unpaid', _('Unpaid')),
+            ('overdue', _('Overdue')),
+        ],
+        default='unpaid',
+    )
+
     def __str__(self):
-        return f"Invoice {self.serial_number} - {self.tenant_name}"
+        return f"Invoice {self.serial_number} - {self.tenant}"
     
 
     class Meta:
-        verbose_name = _('rent invoice')
-        verbose_name_plural = _('rent invoices')
+        verbose_name = _('invoice')
+        verbose_name_plural = _('invoices')
         ordering = ['-date']
     

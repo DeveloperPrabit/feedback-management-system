@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.UserLoginView.as_view(), name='login'),
     path('register/', views.UserRegisterView.as_view(), name='register'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
+    path('view-users/', views.ViewUsersView.as_view(), name='view_users'),
     path('logout/', views.UserLogoutView.as_view(), name='logout'),
     path('change-password/', views.PasswordChangeView.as_view(), name='change_password'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
@@ -14,4 +15,5 @@ urlpatterns = [
     path('delete-user/<uuid:user_uuid>/', views.UserDeleteView.as_view(), name='delete_user'),
     path('add-user/', views.AddUserView.as_view(), name='add_user'),
     path('manage-users/', views.ManageUsersView.as_view(), name='manage_users'),
+    path('user/<uuid:user_uuid>/', views.UserUpdateView.as_view(), name='user_update'),
 ]

@@ -12,6 +12,7 @@ class TenantAdmin(admin.ModelAdmin):
         (None, {
             'fields': (
                 'name',
+                'user',
                 'address',
                 'mobile',
                 'email',

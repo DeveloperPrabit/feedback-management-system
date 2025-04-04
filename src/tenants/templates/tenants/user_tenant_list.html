@@ -1,0 +1,163 @@
+{% extends "user_dashboard.html" %}
+{% load static %}
+
+
+
+{% block dashboard_content %}
+<div class="container mt-4">
+    <!-- Flash Messages -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <!-- Close Button -->
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Title and Actions -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 text-primary">
+            <i class="fas fa-users me-2"></i>Tenant List
+        </h2>
+        <div class="search-box">
+            <!-- Search Form -->
+            <form method="get" action="{% url 'tenants:view_tenants' %}" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search tenant..." value="{{ search_query }}">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tenant List Table -->
+    <div class="table-responsive rounded-3 shadow-lg bg-white p-4">
+        <table class="table table-hover table-striped tenant-table">
+            <thead class="thead-dark bg-primary text-white">
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Profession</th>
+                    <th>House</th>
+                    <th>Flat</th>
+                    <th>Room</th>
+                    <th>Rent</th>
+                    <th>Start Date</th>
+                    <th>Actions</th> <!-- Optional actions column -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for tenant in tenants %}
+                <tr>
+                    <td>{{ tenant.name }}</td>
+                    <td>{{ tenant.address|truncatechars:20 }}</td>
+                    <td>{{ tenant.mobile }}</td>
+                    <td><a href="mailto:{{ tenant.email }}" class="text-decoration-none">{{ tenant.email }}</a></td>
+                    <td>{{ tenant.profession|default:"-" }}</td>
+                    <td>{{ tenant.house_name }}</td>
+                    <td>{{ tenant.flat_number|default:"-" }}</td>
+                    <td>{{ tenant.room_number|default:"-" }}</td>
+                    <td>${{ tenant.rent_amount }}</td>
+                    <td>{{ tenant.rent_start_date|date:"M d, Y" }}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center align-items-center gap-1">
+                            <a href="{% url 'tenants:tenant_details' tenant.uuid %}" class="btn btn-info btn-sm">
+                                View Details
+                            </a>
+                            <a href="{% url 'invoices:create_invoice' %}?tenant_uuid={{ tenant.uuid }}" class="btn btn-primary btn-sm">
+                                Generate Invoice
+                            </a>
+                        </div>
+                    </td>
+            
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center py-4">
+                        <div class="alert alert-info mb-0">No tenants found</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock dashboard_content %}
+
+
+{% comment %} <div class="container mt-4">
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <!-- Close Button -->
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-users me-2"></i>Tenant List</h2>
+        <a href="{% url 'tenants:add_tenant' %}" class="btn btn-success">
+            <i class="fas fa-user-plus me-2"></i>Add Tenant
+        </a>
+        <div class="search-box">
+            <!-- Search Form -->
+            <form method="get" action="{% url 'tenants:view_tenants' %}">
+                <input type="text" name="search" placeholder="Search tenant..." value="{{ search_query }}">
+                <button type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive rounded-3">
+        <table class="table table-borderless tenant-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Profession</th>
+                    <th>House</th>
+                    <th>Flat</th>
+                    <th>Room</th>
+                    <th>Rent</th>
+                    <th>Start Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tenant in tenants %}
+                <tr>
+                    <td>{{ tenant.name }}</td>
+                    <td>{{ tenant.address|truncatechars:20 }}</td>
+                    <td>{{ tenant.mobile }}</td>
+                    <td>{{ tenant.email|urlize }}</td>
+                    <td>{{ tenant.profession|default:"-" }}</td>
+                    <td>{{ tenant.house_name }}</td>
+                    <td>{{ tenant.flat_number|default:"-" }}</td>
+                    <td>{{ tenant.room_number|default:"-" }}</td>
+                    <td>${{ tenant.rent_amount }}</td>
+                    <td>{{ tenant.rent_start_date|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="11" class="text-center py-4">
+                        <div class="alert alert-info mb-0">No tenants found</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div> {% endcomment %}

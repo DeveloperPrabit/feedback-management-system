@@ -45,3 +45,23 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         self.fields['old_password'].widget.attrs.update({'class': 'form-control'})
         self.fields['new_password1'].widget.attrs.update({'class': 'form-control'})
         self.fields['new_password2'].widget.attrs.update({'class': 'form-control'})
+
+
+class EditUserForm(UserChangeForm):
+    password = forms.CharField(
+        label="New Password", 
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}), 
+        required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ('email', 'full_name', 'full_address', 'mobile', 'profile_picture')
+
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Name'}),
+            'full_address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Address'}),
+            'mobile': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mobile Number'}),
+            'profile_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }

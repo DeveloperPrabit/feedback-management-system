@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils import timezone
+import os
 
 class TenantForm(forms.ModelForm):
     class Meta:
@@ -35,19 +36,6 @@ class TenantForm(forms.ModelForm):
             'rent_amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': _('Rent Amount')}),
             'rent_start_date': forms.DateInput(attrs={'class': 'form-control', 'placeholder': _('Rent Start Date'), 'type': 'date'}),
         }
-        help_texts = {
-            'name': _('Enter the name of the tenant.'),
-            'photo': _('Upload a photo of the tenant.'),
-            'address': _('Enter the address of the tenant.'),
-            'mobile': _('Enter the mobile number of the tenant.'),
-            'email': _('Enter the email address of the tenant.'),
-            'profession': _('Enter the profession of the tenant.'),
-            'house_name': _('Enter the house name of the tenant.'),
-            'flat_number': _('Enter the flat number of the tenant.'),
-            'room_number': _('Enter the room number of the tenant.'),
-            'rent_amount': _('Enter the rent amount for the tenant.'),
-            'rent_start_date': _('Select the date when rent starts for this tenant.'), 
-        }
         error_messages = {
             'name': {
                 'max_length': _("This name is too long."),
@@ -66,6 +54,25 @@ class TenantForm(forms.ModelForm):
     def clean_mobile(self):
         mobile = self.cleaned_data.get('mobile')
         if not mobile:
-            raise ValidationError(_('Mobile number is required.'))
+            raise ValidationError(_("Mobile number is required."))
+        if not mobile.isdigit():
+            raise ValidationError(_("Mobile number must contain only digits."))
+        if len(mobile) < 10 or len(mobile) > 15:
+            raise ValidationError(_("Mobile number must be between 10 and 15 digits."))
         return mobile
+    
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        if photo:
+            # Get the file extension
+            ext = os.path.splitext(photo.name)[1].lower()
+            # Allowed file extensions
+            allowed_extensions = ['.png', '.jpg', '.jpeg', '.pdf']
+            if ext not in allowed_extensions:
+                raise ValidationError(_("Only files with extensions PNG, JPG, JPEG, or PDF are allowed."))
+        return photo
+
+
+    
+
     

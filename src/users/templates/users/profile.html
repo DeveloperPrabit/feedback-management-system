@@ -2,23 +2,39 @@
 {% load static %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'css/view_profile.css' %}">
+{% comment %} <link rel="stylesheet" href="{% static 'css/view_profile.css' %}"> {% endcomment %}
 {% endblock css %}
 
+
 {% block dashboard_content %}
-<div class="container" style="display:flex; justify-content: center; min-height: 100vh; ">
-    <div class="col-md-6">
-        <div class="card profile-card shadow-lg text-white">
-            <div class="card-header text-center">
-                <h2>Profile</h2>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="col-md-8">
+        <div class="card profile-card shadow-lg border-0 rounded-lg">
+            <div class="card-header text-center bg-primary text-white rounded-top">
+                <h2 class="fw-bold">User Profile</h2>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="profile-info">
-                    <p><strong>Full Name:</strong> {{ user.full_name }}</p>
-                    <p><strong>Address:</strong> {{ user.full_address }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                    <p><strong>Mobile:</strong> {{ user.mobile }}</p>
-                    <p><strong>Joined Date:</strong> {{ user.date_joined }}</p>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-user-circle me-3 text-primary" style="font-size: 1.5rem;"></i>
+                        <p><strong>Full Name:</strong> {{ user.full_name }}</p>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-map-marker-alt me-3 text-danger" style="font-size: 1.5rem;"></i>
+                        <p><strong>Address:</strong> {{ user.full_address }}</p>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-envelope me-3 text-success" style="font-size: 1.5rem;"></i>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-phone me-3 text-info" style="font-size: 1.5rem;"></i>
+                        <p><strong>Mobile:</strong> {{ user.mobile }}</p>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-calendar-alt me-3 text-warning" style="font-size: 1.5rem;"></i>
+                        <p><strong>Joined Date:</strong> {{ user.date_joined }}</p>
+                    </div>
                 </div>
             </div>
         </div>
