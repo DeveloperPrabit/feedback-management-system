@@ -1,0 +1,22 @@
+/* .tenant-table {
+    margin: 20px 0;
+    --bs-table-bg: #f00e0e;
+    --bs-table-color: #fcf2f2;
+} */
+.tenant-table th {
+    background-color: #d6abab;
+    color: #fff;
+    vertical-align: middle;
+}
+.tenant-table td {
+    vertical-align: middle;
+}
+.tenant-table tr:nth-child(even) td {
+    background-color: white;
+}
+.tenant-table tr:hover td {
+    background-color: rgb(210, 232, 37);
+}
+.action-buttons .btn {
+    padding: 0.375rem 0.75rem;
+}
