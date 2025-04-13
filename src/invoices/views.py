@@ -16,11 +16,10 @@ from users.models import UserType
 
 # Create your views here.
 
-@method_decorator(login_required, name='dispatch')
-class InvoiceListView(ListView):
+class InvoiceListView(LoginRequiredMixin, ListView):
     model = Invoice
     context_object_name = 'invoices'
-    paginate_by = 10
+    paginate_by = 5
     ordering = ['-created_at']
 
     def get_queryset(self):
@@ -65,11 +64,12 @@ class InvoiceListView(ListView):
             return ['invoices/invoice_list.html']
         return ['invoices/user_invoice_list.html']
     
-@method_decorator(login_required, name='dispatch')
-class ManageInvoicesView(ListView):
+    
+class ManageInvoicesView(LoginRequiredMixin, ListView):
     model = Invoice
     template_name = 'invoices/manage_invoices.html'
     context_object_name = 'invoices'
+    paginate_by = 5
 
     def get_queryset(self):
         queryset = super().get_queryset()

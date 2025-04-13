@@ -8,6 +8,11 @@
 
 {% block maincontent %}
 <div class="login-container">
+    <!-- Logo at the top -->
+    <div class="logo" style="text-align: center; margin-bottom: 20px;">
+        <img src="{% static 'images/logo.jpeg' %}" alt="Site Logo" style="max-height: 80px;">
+    </div>
+
     <h1>Login to Your Account</h1>
 
     {% if messages %}
@@ -42,7 +47,7 @@
         <button type="submit">Login</button>
 
         <div class="forgot-password">
-            <a href="">Forgot Password?</a>
+            <a href="{% url 'users:forgot_password' %}">Forgot Password?</a>
         </div>
 
         <div class="signup-link">

@@ -25,7 +25,7 @@
                 </a>
                 <div class="search-box">
                     <!-- Search Form -->
-                    <form method="get" action="{% url 'users:dashboard' %}">
+                    <form method="get" action="{% url 'users:manage_users' %}">
                         <input type="text" name="search" placeholder="Search users..." value="{{ search_query }}">
                         <button type="submit">
                             <i class="fas fa-search"></i>
@@ -40,6 +40,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th>S.N</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
@@ -51,6 +52,7 @@
                         <!-- Sample Data -->
                         {% for user in users %}
                         <tr>
+                            <td>{{ forloop.counter }}</td>
                             <td>
                                 {% if user.full_name %}
                                     {{ user.full_name }}
@@ -84,6 +86,44 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </div>
+            <!-- Pagination -->
+            <div class="pagination-wrapper mt-3">
+                <nav aria-label="User pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&laquo;</span>
+                            </li>
+                        {% endif %}
+
+                        {% for num in paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>

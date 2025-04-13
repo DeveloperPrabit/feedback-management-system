@@ -52,22 +52,22 @@
             <h5 class="text-primary">Fee Breakdown</h5>
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <p><strong>Rent Amount:</strong> ${{ invoice.rent_amount }}</p>
-                    <p><strong>Parking Fee:</strong> ${{ invoice.parking_fee|default:"0.00" }}</p>
-                    <p><strong>Electricity Fee:</strong> ${{ invoice.electricity_fee|default:"0.00" }}</p>
+                    <p><strong>Rent Amount:</strong> Rs {{ invoice.rent_amount }}</p>
+                    <p><strong>Parking Fee:</strong> Rs {{ invoice.parking_fee|default:"0.00" }}</p>
+                    <p><strong>Electricity Fee:</strong> Rs {{ invoice.electricity_fee|default:"0.00" }}</p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Security Fee:</strong> ${{ invoice.security_fee|default:"0.00" }}</p>
-                    <p><strong>Discount:</strong> ${{ invoice.discount|default:"0.00" }}</p>
-                    <p><strong>Tax:</strong> ${{ invoice.tax|default:"0.00" }}</p>
+                    <p><strong>Security Fee:</strong> Rs {{ invoice.security_fee|default:"0.00" }}</p>
+                    <p><strong>Discount:</strong> Rs {{ invoice.discount|default:"0.00" }}</p>
+                    <p><strong>Tax:</strong> Rs {{ invoice.tax|default:"0.00" }}</p>
                 </div>
             </div>
 
             <!-- Total Calculation -->
             <h5 class="text-primary">Total Calculation</h5>
             <div class="text-end mb-4">
-                <p><strong>Total Amount:</strong> ${{ invoice.total_amount }}</p>
-                <p><strong>Grand Total:</strong> ${{ invoice.grand_total }}</p>
+                <p><strong>Total Amount:</strong> Rs {{ invoice.total_amount }}</p>
+                <p><strong>Grand Total:</strong> Rs {{ invoice.grand_total }}</p>
             </div>
 
             <!-- Bank Details -->

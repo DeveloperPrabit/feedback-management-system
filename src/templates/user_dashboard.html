@@ -22,11 +22,20 @@
                 <div class="conta">
                     <h3 style="text-decoration: underline; height: 10vh;">Dashboard</h3>
                 </div>
-                {% if request.user.profile_picture %}
-                    <img src="{{ request.user.profile_picture.url }}" alt="Profile Photo" class="profile-photo">
-                {% else %}
-                    <img src="{% static 'images/my.jpg' %}" alt="Default Profile" class="profile-photo">
-                {% endif %}
+                <div class="profile-picture-wrapper" style="position: relative; display: inline-block;">
+                    {% if request.user.profile_picture %}
+                        <img src="{{ request.user.profile_picture.url }}" alt="Profile Photo" class="profile-photo">
+                    {% else %}
+                        <img src="{% static 'images/my.jpg' %}" alt="Default Profile" class="profile-photo">
+                    {% endif %}
+
+                    <!-- Link to the profile picture update page -->
+                    <a href="{% url 'users:profile_edit' %}"
+                    class="position-absolute bottom-0 end-0 bg-white text-primary border border-primary rounded-circle p-2 shadow"
+                    title="Edit Profile Picture">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </div>
                 <p>{{ request.user.email }}</p>
             </div>
 
@@ -42,9 +51,9 @@
                 <a href="{% url 'users:change_password' %}" class="menu-item {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
                     <i class="fas fa-lock"></i> Change Password
                 </a>
-                <a href="{% url 'users:profile_edit' %}" class="menu-item {% if request.resolver_match.url_name == 'profile_edit' %}active{% endif %}">
+                {% comment %} <a href="{% url 'users:profile_edit' %}" class="menu-item {% if request.resolver_match.url_name == 'profile_edit' %}active{% endif %}">
                     <i class="fas fa-camera"></i> Change Profile Photo
-                </a>
+                </a> {% endcomment %}
                 <a href="{% url 'tenants:add_tenant' %}" class="menu-item {% if request.resolver_match.url_name == 'add_tenant' %}active{% endif %}">
                     <i class="fas fa-user"></i>  Add Tenant
                 </a>

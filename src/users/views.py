@@ -1,6 +1,7 @@
+import random
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
@@ -10,13 +11,14 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
 from django.db.models import Q
+from django.db import transaction
 import requests
 from .forms import (
     UserLoginForm,
     CustomPasswordChangeForm,
     EditUserForm
 )
-from .models import UserType
+from .models import UserType, PasswordResetOTP
 from tenants.models import Tenant
 from invoices.models import Invoice
 
@@ -168,34 +170,65 @@ class DashboardView(View):
                 'unpaid_invoices': unpaid_invoices,
             }
             return render(request, 'users/dashboard/admin_index.html', context)
-        return render(request, 'users/dashboard/user_index.html')
-    
-    def post(self, request):
-        pass
-
-
-@method_decorator(login_required, name='dispatch')
-class ViewUsersView(View):
-    def get(self, request):
-        search_query = request.GET.get('search', '')
-        if request.user.user_type == UserType.ADMIN:
-            if search_query:
-                users = User.objects.filter( 
-                    Q(email__icontains=search_query) | 
-                    Q(full_name__icontains=search_query) | 
-                    Q(mobile__icontains=search_query)
-                ).exclude(uuid=request.user.uuid)
-            else:
-                users = User.objects.all().exclude(uuid=request.user.uuid)
+        else:
             context = {
-                'users': users,
-                'search_query': search_query,
+                'tenants': Tenant.objects.filter(user=request.user).count(),
+                'invoices': Invoice.objects.filter(tenant__user=request.user).count(),
+                'paid_invoices': Invoice.objects.filter(tenant__user=request.user, status='Paid').count(),
+                'unpaid_invoices': Invoice.objects.filter(tenant__user=request.user, status='Unpaid').count(),
             }
-            return render(request, 'users/dashboard/view_users.html', context)
-        return render(request, 'users/dashboard/user_index.html')
+            return render(request, 'users/dashboard/user_index.html', context)
     
     def post(self, request):
         pass
+
+
+class ViewUsersView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = User
+    template_name = 'users/dashboard/view_users.html'
+    context_object_name = 'users'
+    paginate_by = 5
+
+    def test_func(self):
+        return self.request.user.user_type == UserType.ADMIN
+    
+    def get_queryset(self):
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            return User.objects.filter( 
+                Q(email__icontains=search_query) | 
+                Q(full_name__icontains=search_query) | 
+                Q(mobile__icontains=search_query)
+            ).exclude(uuid=self.request.user.uuid)
+        return User.objects.exclude(uuid=self.request.user.uuid)
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('search', '')
+        return context
+    
+    # def get(self, request):
+    #     search_query = request.GET.get('search', '')
+    #     print(request.user.user_type)
+    #     if request.user.user_type == UserType.ADMIN:
+    #         if search_query:
+    #             users = User.objects.filter( 
+    #                 Q(email__icontains=search_query) | 
+    #                 Q(full_name__icontains=search_query) | 
+    #                 Q(mobile__icontains=search_query)
+    #             ).exclude(uuid=request.user.uuid)
+    #         else:
+    #             users = User.objects.all().exclude(uuid=request.user.uuid)
+    #         context = {
+    #             'users': users,
+    #             'search_query': search_query,
+    #         }
+    #         return render(request, 'users/dashboard/view_users.html', context)
+    #     return render(request, 'users/dashboard/user_index.html')
+    
+    # def post(self, request):
+    #     pass
 
 
 @method_decorator(login_required, name='dispatch')
@@ -212,13 +245,15 @@ class ProfileView(View):
 @method_decorator(login_required, name='dispatch')
 class UpdateProfileView(View):
 
-    template_name = 'users/update_profile.html'
+    def get_template_names(self) -> list[str]:
+        if self.request.user.user_type == UserType.ADMIN:
+            return ['users/admin_profile_update.html']
+        return ['users/update_profile.html']
+    
 
     def get(self, request):
         user = request.user
-        if request.user.user_type == UserType.ADMIN:
-            return render(request, 'users/dashboard/admin_index.html')
-        return render(request, self.template_name, {'user': user})
+        return render(request, self.get_template_names(), {'user': user})
     
 
     def post(self, request):
@@ -233,7 +268,7 @@ class UpdateProfileView(View):
             return redirect("users:dashboard")
         else:
             messages.error(request, "No profile picture uploaded.")
-            return render(request, self.template_name, {'user': user})
+            return render(request, self.get_template_names(), {'user': user})
         
 
 @method_decorator(login_required, name='dispatch')
@@ -314,17 +349,46 @@ class AddUserView(View):
         messages.success(request, "User added successfully.")
         return redirect("users:manage_users")
 
-@method_decorator(login_required, name='dispatch')
-class ManageUsersView(View):
+class ManageUsersView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = User
+    context_object_name = 'users'
+    paginate_by = 5
     template_name = 'users/dashboard/manage_users.html'
 
-    def get(self, request):
-        if request.user.user_type != UserType.ADMIN:
-            messages.error(request, "You do not have permission to access this page.")
-            return redirect("users:dashboard")
+    def test_func(self):
+        return self.request.user.user_type == UserType.ADMIN
+    
+    def get_queryset(self):
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            return User.objects.filter( 
+                Q(email__icontains=search_query) | 
+                Q(full_name__icontains=search_query) | 
+                Q(mobile__icontains=search_query)
+            ).exclude(uuid=self.request.user.uuid)
+        return User.objects.exclude(uuid=self.request.user.uuid)
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('search', '')
+        return context
+
+    # def get(self, request):
+    #     search_query = request.GET.get('search', '')
+    #     if request.user.user_type != UserType.ADMIN:
+    #         messages.error(request, "You do not have permission to access this page.")
+    #         return redirect("users:dashboard")
         
-        users = User.objects.all().exclude(uuid=request.user.uuid)
-        return render(request, self.template_name, {'users': users})
+    #     if search_query:
+    #         users = User.objects.filter( 
+    #             Q(email__icontains=search_query) | 
+    #             Q(full_name__icontains=search_query) | 
+    #             Q(mobile__icontains=search_query)
+    #         ).exclude(uuid=request.user.uuid)
+    #     else:
+    #         users = User.objects.all().exclude(uuid=request.user.uuid)
+    #     return render(request, self.template_name, {'users': users})
     
 
 class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -346,3 +410,85 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         if password:
             self.object.set_password(password)  # Set hashed password
         return super().form_valid(form)
+
+
+class ForgotPasswordView(View):
+    def get(self, request):
+        return render(request, 'users/forgot_password.html')
+
+    def post(self, request):
+        email = request.POST.get('email')
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+            messages.error(request, "User with this email does not exist.")
+            return redirect("users:forgot_password")
+        
+        # Generate OTP
+        otp = f"{random.randint(100000, 999999)}"
+        otp_record = PasswordResetOTP.objects.filter(user=user).order_by('-created_at').first()
+        if otp_record:
+            otp_record.otp = otp
+            otp_record.save(update_fields=['otp', 'created_at'])
+        else:
+            PasswordResetOTP.objects.create(user=user, otp=otp)
+
+        # Send OTP to user's email (implement your email sending logic here)
+        messages.success(request, f"your otp is {otp}.")
+        request.session['request_user_id'] = str(user.uuid)
+        return redirect('users:verify_otp')
+    
+
+class VerifyOTPView(View):
+    def get(self, request):
+        return render(request, 'users/verify_otp.html')
+
+    def post(self, request):
+        otp = request.POST.get('otp')
+        user_uuid = request.session.get('request_user_id')
+
+        if not user_uuid:
+            messages.error(request, "Session expired. Please request a new OTP.")
+            return redirect("users:forgot_password")
+        
+        user = User.objects.get(uuid=user_uuid)
+        otp_record = PasswordResetOTP.objects.filter(user=user).order_by('-created_at').first()
+
+        if otp_record and otp_record.is_valid() and otp_record.otp == otp:
+            # OTP is valid
+            request.session['otp_verified'] = True
+            return redirect('users:reset_password')
+        else:
+            messages.error(request, "Invalid or expired OTP.")
+            return redirect("users:verify_otp")
+        
+
+class ResetPasswordView(View):
+    def get(self, request):
+        if not request.session.get('otp_verified'):
+            messages.error(request, "Please verify your OTP first.")
+            return redirect("users:forgot_password")
+        return render(request, 'users/reset_password.html')
+    
+    @transaction.atomic
+    def post(self, request):
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return redirect("users:reset_password")
+        
+        user_uuid = request.session.get('request_user_id')
+
+        if not user_uuid:
+            messages.error(request, "Session expired. Please request a new OTP.")
+            return redirect("users:forgot_password")
+        
+        user = User.objects.get(uuid=user_uuid)
+        user.set_password(password)
+        user.save()
+
+        request.session.flush()
+        messages.success(request, "Password reset successfully. You can now log in.")
+        return redirect('users:login')

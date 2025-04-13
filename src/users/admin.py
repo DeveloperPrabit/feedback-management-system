@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import User
+from .models import User, PasswordResetOTP
 
 # Register your models here.
 
@@ -54,3 +54,7 @@ class UserAdmin(UserAdmin):
     ordering = ("email",)
 
 admin.site.register(User, UserAdmin)
+
+@admin.register(PasswordResetOTP)
+class PasswordResetOTPAdmin(admin.ModelAdmin):
+    list_display = ('user', 'otp', 'created_at',)

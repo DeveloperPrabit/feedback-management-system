@@ -27,7 +27,7 @@
     <div class="sidebar">
         <div class="brand-header">
             <a href="{% url 'users:dashboard' %}" class="brand-link">
-                <img src="{% static 'img/logo.png' %}" alt="Logo" class="brand-logo">
+                <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="brand-logo">
                 <h5 class="brand-title">Rental Management System</h5>
             </a>
         </div>
@@ -84,6 +84,12 @@
                         <li>
                             <a class="dropdown-item d-flex align-items-center" href="{% url 'users:change_password' %}">
                                 <i class="fas fa-key me-2"></i> Change Password
+                            </a>
+                        </li>
+                        <!-- option for changing profile picture -->
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="{% url 'users:profile_edit' %}">
+                                <i class="fas fa-user-circle me-2"></i> Change Profile Picture
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>

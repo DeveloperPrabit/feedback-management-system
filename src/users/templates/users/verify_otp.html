@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Verify OTP {% endblock title %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock css %}
+
+{% block maincontent %}
+<div class="login-container">
+    <!-- Logo at the top -->
+    <div class="logo" style="text-align: center; margin-bottom: 20px;">
+        <img src="{% static 'images/logo.jpeg' %}" alt="Site Logo" style="max-height: 80px;">
+    </div>
+
+    <h1>Verify OTP</h1>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="text" name="otp" class="form-control" placeholder="Enter the OTP sent to your email" required>
+        <!-- Verify otp button -->
+        <button type="submit" class="btn btn-primary mt-4">Verify OTP</button>
+        <div class="resend-otp">
+            <p>Didn't receive the OTP? <a href="{% url 'users:forgot_password' %}">Resend OTP</a></p>
+        </div>
+    </form>
+</div>
+{% endblock maincontent%}

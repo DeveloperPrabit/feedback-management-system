@@ -1,0 +1,48 @@
+{% extends 'admin_dashboard.html' %}
+{% load static %}
+
+{% block css %}
+<style>
+    .centered-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
+    }
+</style>
+{% endblock css %}
+
+{% block dashboard_content %}
+
+<div class="centered-container">
+    <div class="card shadow-lg p-4 d-flex justify-content-center align-items-center" style="max-width: 500px; width: 100%; border-radius: 10px;">
+        <h2 class="text-center mb-4">Update Profile Photo</h2>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <!-- Close Button -->
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="w-100">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="profile_photo" class="form-label fw-bold">Upload New Profile Photo</label>
+                <input type="file" name="profile_picture" id="profile_photo" class="form-control">
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary px-4">Update Photo</button>
+                <button type="button" class="btn btn-secondary px-4" onclick="window.location.href='{% url 'users:dashboard' %}'">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock dashboard_content %}

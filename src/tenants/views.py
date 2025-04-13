@@ -15,11 +15,10 @@ from .forms import TenantForm
 
 # Create your views here.
 
-@method_decorator(login_required, name='dispatch')
-class TenantListView(ListView):
+class TenantListView(LoginRequiredMixin, ListView):
     model = Tenant
     context_object_name = 'tenants'
-    paginate_by = 10
+    paginate_by = 5
     ordering = ['-created_at']
 
     def get_queryset(self):
@@ -52,11 +51,11 @@ class TenantListView(ListView):
             return ['tenants/user_tenant_list.html']
         
 
-@method_decorator(login_required, name='dispatch')
-class ManageTenantView(ListView):
+class ManageTenantView(LoginRequiredMixin, ListView):
     model = Tenant
     template_name = 'tenants/manage_tenant.html'
     context_object_name = 'tenants'
+    paginate_by = 5
 
     def get_queryset(self):
         if self.request.user.user_type == UserType.ADMIN:

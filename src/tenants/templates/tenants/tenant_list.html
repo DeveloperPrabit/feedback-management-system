@@ -39,6 +39,7 @@
         <table class="table table-borderless tenant-table">
             <thead class="thead-dark">
                 <tr>
+                    <th>S.N</th>
                     <th>Name</th>
                     <th>Address</th>
                     <th>Mobile</th>
@@ -54,6 +55,7 @@
             <tbody>
                 {% for tenant in tenants %}
                 <tr>
+                    <td>{{forloop.counter}}</td>
                     <td>{{ tenant.name }}</td>
                     <td>{{ tenant.address|truncatechars:20 }}</td>
                     <td>{{ tenant.mobile }}</td>
@@ -62,7 +64,7 @@
                     <td>{{ tenant.house_name }}</td>
                     <td>{{ tenant.flat_number|default:"-" }}</td>
                     <td>{{ tenant.room_number|default:"-" }}</td>
-                    <td>${{ tenant.rent_amount }}</td>
+                    <td>Rs.{{ tenant.rent_amount }}</td>
                     <td>{{ tenant.rent_start_date|date:"M d, Y" }}</td>
                 </tr>
                 {% empty %}
@@ -75,5 +77,45 @@
             </tbody>
         </table>
     </div>
+    {% if paginator.num_pages > 1 %}
+    <!-- Pagination -->
+    <div class="pagination-wrapper mt-3">
+        <nav aria-label="User pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                {% endif %}
+
+                {% for num in paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
 </div>
 {% endblock dashboard_content %}

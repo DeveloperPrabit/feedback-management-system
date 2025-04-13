@@ -1,4 +1,7 @@
 import uuid
+import random
+from django.utils import timezone
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
@@ -93,3 +96,17 @@ class User(AbstractBaseUser, PermissionsMixin, TimestampMixin):
 
 
 
+class PasswordResetOTP(TimestampMixin):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='password_reset_otps'
+    )
+
+    otp = models.CharField(
+        max_length=6,
+    )
+
+    def is_valid(self):
+        return timezone.now() <= self.created_at + timedelta(minutes=60)
+    

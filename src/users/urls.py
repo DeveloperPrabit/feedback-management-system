@@ -16,4 +16,7 @@ urlpatterns = [
     path('add-user/', views.AddUserView.as_view(), name='add_user'),
     path('manage-users/', views.ManageUsersView.as_view(), name='manage_users'),
     path('user/<uuid:user_uuid>/', views.UserUpdateView.as_view(), name='user_update'),
+    path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot_password'),
+    path('verify-otp/', views.VerifyOTPView.as_view(), name='verify_otp'),
+    path('reset-password/', views.ResetPasswordView.as_view(), name='reset_password')
 ]
