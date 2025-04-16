@@ -14,7 +14,8 @@ from .models import Invoice
 from .forms import InvoiceForm
 from tenants.models import Tenant
 from users.models import UserType
-
+from django.conf import settings
+import os
 # Create your views here.
 
 def get_invoice_serial_number():
@@ -183,8 +184,8 @@ def download_invoice_pdf(request, invoice_uuid):
     invoice = get_object_or_404(Invoice, uuid=invoice_uuid)
 
     html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice})
-
-    pdf = HTML(string=html_string).write_pdf()
+    html = HTML(string=html_string, base_url=os.path.join(settings.BASE_DIR, 'static'))
+    pdf = html.write_pdf()
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="invoice_{invoice.serial_number}.pdf"'
     return response
