@@ -67,6 +67,11 @@ header {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
+#previous-due {
+    grid-column: span 2; /* Makes the div span across both columns */
+    padding: 10px;
+}
+
 .flex {
     display: flex;
     justify-content: space-between;

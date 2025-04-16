@@ -48,6 +48,11 @@ class Invoice(TimestampMixin):
         max_length=100
     )
 
+    pan_or_vat_number = models.CharField(
+        max_length=50,
+        null=True,
+    )
+
     rent_amount = models.DecimalField(
         max_digits=10, 
         decimal_places=2
@@ -56,29 +61,61 @@ class Invoice(TimestampMixin):
     parking_fee = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
-        blank=True, 
-        null=True
+        default=0.00,
     )
 
     electricity_fee = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
-        blank=True, 
-        null=True
+        default=0.00
     )
 
     security_fee = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
-        blank=True, 
-        null=True
+        default=0.00
+    )
+
+    drinking_water_fee = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0.00
+    )
+
+    generator_power_backup_fee = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0.00
+    )
+
+    normal_water_fee = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0.00
+    )
+
+    internet_telephone_tv_fee = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0.00
+    )
+
+    waste_fee = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0.00
+    )
+
+    other_fee = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0.00
     )
 
     discount = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
-        blank=True, 
-        null=True
+        default=0.00
     )
 
     total_amount = models.DecimalField(
@@ -96,6 +133,12 @@ class Invoice(TimestampMixin):
     grand_total = models.DecimalField(
         max_digits=10, 
         decimal_places=2
+    )
+
+    previous_due = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00
     )
 
     bank_name = models.CharField(

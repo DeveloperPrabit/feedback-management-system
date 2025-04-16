@@ -11,7 +11,6 @@ class TenantForm(forms.ModelForm):
         model = Tenant
         fields = [
             'name',
-            'photo',
             'address',
             'mobile',
             'email',
@@ -20,7 +19,8 @@ class TenantForm(forms.ModelForm):
             'flat_number',
             'room_number',
             'rent_amount',
-            'rent_start_date', 
+            'rent_start_date',
+            'photo', 
         ]
 
         widgets = {

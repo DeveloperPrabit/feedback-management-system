@@ -59,7 +59,7 @@ class Tenant(TimestampMixin):
     house_name = models.CharField(
         _('house name'),
         max_length=100,
-        default='Unknown',
+        blank=True,
     )
 
     flat_number = models.CharField(

@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from datetime import datetime
 from django.db.models import Q
 from django.contrib import messages
 from .models import Invoice
@@ -15,6 +16,13 @@ from tenants.models import Tenant
 from users.models import UserType
 
 # Create your views here.
+
+def get_invoice_serial_number():
+    # Generate a unique serial number for the invoice
+    # This is a placeholder implementation. You can customize it as needed.
+    import random
+    return ''.join(random.choices(datetime.now().strftime("%Y%m%d") + str(random.randint(1000, 9999)), k=10))
+
 
 class InvoiceListView(LoginRequiredMixin, ListView):
     model = Invoice
@@ -106,8 +114,7 @@ class ManageInvoicesView(LoginRequiredMixin, ListView):
         if status:
             queryset = queryset.filter(status=status)
 
-        return queryset.order_by('-created_at')
-    
+        return queryset.order_by('-created_at') 
 
 
 @method_decorator(login_required, name='dispatch')
@@ -126,8 +133,11 @@ class InvoiceCreateView(View):
     def post(self, request, *args, **kwargs):
         form = InvoiceForm(request.POST)
         if form.is_valid():
+            # Generate a unique serial number for the invoice
+            serial_number = get_invoice_serial_number()
             invoice = form.save(commit=False)
             invoice.tenant = form.cleaned_data['tenant']
+            invoice.serial_number = serial_number
             invoice.save()
             messages.success(request, "इनभ्वाइस सफलतापूर्वक पेश गरियो!")
             return redirect('invoices:view_invoices')

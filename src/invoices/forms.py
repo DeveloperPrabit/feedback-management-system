@@ -8,7 +8,6 @@ class InvoiceForm(forms.ModelForm):
     class Meta:
        model = Invoice
        fields = (
-           'serial_number',
            'rent_month',
            'date',
            'tenant',
@@ -16,14 +15,22 @@ class InvoiceForm(forms.ModelForm):
            'flat_number',
            'room_no',
            'building_name',
+           'pan_or_vat_number',
            'rent_amount',
            'parking_fee',
            'electricity_fee',
            'security_fee',
+           'drinking_water_fee',
+           'generator_power_backup_fee',
+           'normal_water_fee',
+           'internet_telephone_tv_fee',
+           'waste_fee',
+            'other_fee',
            'discount',
            'total_amount',
            'tax',
            'grand_total',
+           'previous_due',
            'bank_name',
            'account_number',
            'account_name',
@@ -86,15 +93,38 @@ class InvoiceForm(forms.ModelForm):
         parking_fee = cleaned_data.get('parking_fee', 0)
         electricity_fee = cleaned_data.get('electricity_fee', 0)
         security_fee = cleaned_data.get('security_fee', 0)
+        drinking_water_fee = cleaned_data.get('drinking_water_fee', 0)
+        generator_power_backup_fee = cleaned_data.get('generator_power_backup_fee', 0)
+        normal_water_fee = cleaned_data.get('normal_water_fee', 0)
+        internet_telephone_tv_fee = cleaned_data.get('internet_telephone_tv_fee', 0)
+        waste_fee = cleaned_data.get('waste_fee', 0)
+        other_fee = cleaned_data.get('other_fee', 0)
+        previous_due = cleaned_data.get('previous_due', 0)
         discount = cleaned_data.get('discount', 0)
         tax = cleaned_data.get('tax', 0)
 
         # Ensure rent_amount and grand_total are properly calculated
         if rent_amount <= 0:
             raise ValidationError({"rent_amount": "Rent amount must be a positive number."})
+        
+        #calculate total_amount
+        total_amount = (
+            rent_amount +
+            parking_fee +
+            electricity_fee +
+            security_fee +
+            drinking_water_fee +
+            generator_power_backup_fee +
+            normal_water_fee +
+            internet_telephone_tv_fee +
+            waste_fee +
+            other_fee 
+        )
 
         # Calculate grand_total
-        grand_total = rent_amount + parking_fee + electricity_fee + security_fee - discount + tax
+        grand_total = total_amount + tax + previous_due - discount
+        if grand_total < 0:
+            raise ValidationError({"grand_total": "Grand total cannot be negative."})
 
         # Set the calculated grand_total back to the cleaned_data
         cleaned_data['grand_total'] = grand_total

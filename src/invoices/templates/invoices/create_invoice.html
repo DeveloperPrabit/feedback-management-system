@@ -4,6 +4,7 @@
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/create_invoice.css' %}">
 <script src="{% static 'js/create_invoice.js' %}"></script>
+<script src="{% static 'js/invoice.js' %}"></script>
 {% endblock css %}
 
 {% block dashboard_content %}
@@ -33,12 +34,12 @@
         
         <!-- Section 1 -->
         <div class="section flex">
-            <div>
+            {% comment %} <div>
                 <label>सि.नं.: {{ form.serial_number }}</label>
                 {% if form.serial_number.errors %}
                     <div class="text-danger">{{ form.serial_number.errors }}</div>
                 {% endif %}
-            </div>
+            </div> {% endcomment %}
             <div>
                 <label>बहाल महिना: {{ form.rent_month }}</label>
                 {% if form.rent_month.errors %}
@@ -54,7 +55,7 @@
         </div>
     
         <!-- Section 2 -->
-        <div class="section">
+        <div class="section" style="border: 1px solid black; padding: 10px; border-radius: 15px;">
             <div>
                 <label>बहालवालाको नाम: {{ form.tenant }}</label>
                 {% if form.tenant.errors %}
@@ -77,7 +78,7 @@
                     {% endif %}
                 </div>
                 <div>
-                    <label>कोठा नं.: {{ form.room_no }}</label>
+                    <label>कोठा, सटर, पसल, अन्य नं.: {{ form.room_no }}</label>
                     {% if form.room_no.errors %}
                         <div class="text-danger">{{ form.room_no.errors }}</div>
                     {% endif %}
@@ -85,112 +86,168 @@
             </div>
     
             <div>
-                <label>बिल्डिङ नाम वा नम्बर: {{ form.building_name }}</label>
+                <label>घर, बिल्डिङ, अपार्टमेन्ट, बंगला नाम वा नम्बर: {{ form.building_name }}</label>
                 {% if form.building_name.errors %}
                     <div class="text-danger">{{ form.building_name.errors }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label>पान नं./ भ्याट नं.: {{ form.pan_or_vat_number }}</label>
+                {% if form.pan_or_vat_number.errors %}
+                    <div class="text-danger">{{ form.pan_or_vat_number.errors }}</div>
                 {% endif %}
             </div>
         </div>
     
         <!-- Section 3: Rent Details -->
-        <h3 class="section-title">सुल्क विवरण</h3>
-        <div class="section grid-two">
-            <div>
-                <label>बहाल रकम: {{ form.rent_amount }}</label>
-                {% if form.rent_amount.errors %}
-                    <div class="text-danger">{{ form.rent_amount.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>पार्किङ: {{ form.parking_fee }}</label>
-                {% if form.parking_fee.errors %}
-                    <div class="text-danger">{{ form.parking_fee.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>बिजुली: {{ form.electricity_fee }}</label>
-                {% if form.electricity_fee.errors %}
-                    <div class="text-danger">{{ form.electricity_fee.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>सुरक्षा गार्ड: {{ form.security_fee }}</label>
-                {% if form.security_fee.errors %}
-                    <div class="text-danger">{{ form.security_fee.errors }}</div>
-                {% endif %}
+        <div class="section" style="border: 1px solid black; padding: 10px; border-radius: 15px;">
+            <h3 class="section-title">सुल्क विवरण</h3>
+            <div class="section grid-two">
+                <div>
+                    <label>बहाल रकम: {{ form.rent_amount }}</label>
+                    {% if form.rent_amount.errors %}
+                        <div class="text-danger">{{ form.rent_amount.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>पार्किङ: {{ form.parking_fee }}</label>
+                    {% if form.parking_fee.errors %}
+                        <div class="text-danger">{{ form.parking_fee.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>बिजुली: {{ form.electricity_fee }}</label>
+                    {% if form.electricity_fee.errors %}
+                        <div class="text-danger">{{ form.electricity_fee.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>पिउने पानी : {{ form.drinking_water_fee }}</label>
+                    {% if form.drinking_water_fee.errors %}
+                        <div class="text-danger">{{ form.drinking_water_fee.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>साधारण पानी  : {{ form.normal_water_fee }}</label>
+                    {% if form.normal_water_fee.errors %}
+                        <div class="text-danger">{{ form.normal_water_fee.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>फोहोर सरसफाई   : {{ form.waste_fee }}</label>
+                    {% if form.waste_fee.errors %}
+                        <div class="text-danger">{{ form.waste_fee.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>सुरक्षा गार्ड: {{ form.security_fee }}</label>
+                    {% if form.security_fee.errors %}
+                        <div class="text-danger">{{ form.security_fee.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>जेनेरेटर, पावर ब्याकप : {{ form.generator_power_backup_fee }}</label>
+                    {% if form.generator_power_backup_fee.errors %}
+                        <div class="text-danger">{{ form.generator_power_backup_fee.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>ईन्टरनेट, टेलिफोन, टिभी  : {{ form.internet_telephone_tv_fee }}</label>
+                    {% if form.internet_telephone_tv_fee.errors %}
+                        <div class="text-danger">{{ form.internet_telephone_tv_fee.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>अन्य खर्च: {{ form.other_fee }}</label>
+                    {% if form.other_fee.errors %}
+                        <div class="text-danger">{{ form.other_fee.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     
         <!-- Section 4: Total Calculation -->
-        <h3 class="section-title">जम्मा हिसाबको विवरण</h3>
-        <div class="section grid-two">
-            <div>
-                <label>छुट रकम: {{ form.discount }}</label>
-                {% if form.discount.errors %}
-                    <div class="text-danger">{{ form.discount.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>जम्मा रकम: {{ form.total_amount }}</label>
-                {% if form.total_amount.errors %}
-                    <div class="text-danger">{{ form.total_amount.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>बहाल कर: {{ form.tax }}</label>
-                {% if form.tax.errors %}
-                    <div class="text-danger">{{ form.tax.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>कुल जम्मा रकम: {{ form.grand_total }}</label>
-                {% if form.grand_total.errors %}
-                    <div class="text-danger">{{ form.grand_total.errors }}</div>
-                {% endif %}
+        <div class="section" style="border: 1px solid black; padding: 10px; border-radius: 15px;">
+            <h3 class="section-title">जम्मा हिसाबको विवरण</h3>
+            <div class="section grid-two">
+                <div>
+                    <label>छुट रकम: {{ form.discount }}</label>
+                    {% if form.discount.errors %}
+                        <div class="text-danger">{{ form.discount.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>जम्मा रकम: {{ form.total_amount }}</label>
+                    {% if form.total_amount.errors %}
+                        <div class="text-danger">{{ form.total_amount.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>बहाल कर: {{ form.tax }}</label>
+                    {% if form.tax.errors %}
+                        <div class="text-danger">{{ form.tax.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>कुल जम्मा रकम: {{ form.grand_total }}</label>
+                    {% if form.grand_total.errors %}
+                        <div class="text-danger">{{ form.grand_total.errors }}</div>
+                    {% endif %}
+                </div>
+                <div id="previous-due">
+                    <label>अगाडिको बाँकी रकम : {{ form.previous_due }}</label>
+                    {% if form.previous_due.errors %}
+                        <div class="text-danger">{{ form.previous_due.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     
         <!-- Section 5: Bank Details -->
-        <h3 class="section-title">बैंक विवरण</h3>
-        <div class="section">
-            <div>
-                <label>बैंक नाम: {{ form.bank_name }}</label>
-                {% if form.bank_name.errors %}
-                    <div class="text-danger">{{ form.bank_name.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>खाता नम्बर: {{ form.account_number }}</label>
-                {% if form.account_number.errors %}
-                    <div class="text-danger">{{ form.account_number.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>खाता नाम: {{ form.account_name }}</label>
-                {% if form.account_name.errors %}
-                    <div class="text-danger">{{ form.account_name.errors }}</div>
-                {% endif %}
+        <div style="border: 1px solid black; padding: 10px; border-radius: 15px;">
+            <h3 class="section-title">बैंक विवरण</h3>
+            <div class="section">
+                <div>
+                    <label>बैंक नाम: {{ form.bank_name }}</label>
+                    {% if form.bank_name.errors %}
+                        <div class="text-danger">{{ form.bank_name.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>खाता नम्बर: {{ form.account_number }}</label>
+                    {% if form.account_number.errors %}
+                        <div class="text-danger">{{ form.account_number.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>खाता नाम: {{ form.account_name }}</label>
+                    {% if form.account_name.errors %}
+                        <div class="text-danger">{{ form.account_name.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     
         <!-- Section 6: Signatures -->
-        <h3 class="section-title">हस्ताक्षर</h3>
-        <div class="section">
-            <div>
-                <label>बहाल धनि हस्ताक्षर: {{ form.owner_signature }}</label>
-                {% if form.owner_signature.errors %}
-                    <div class="text-danger">{{ form.owner_signature.errors }}</div>
-                {% endif %}
-            </div>
-            <div>
-                <label>बहाल वाला हस्ताक्षर: {{ form.tenant_signature }}</label>
-                {% if form.tenant_signature.errors %}
-                    <div class="text-danger">{{ form.tenant_signature.errors }}</div>
-                {% endif %}
+        <div style="border: 1px solid black; padding: 10px; border-radius: 15px; margin-top: 20px;">
+            <h3 class="section-title">हस्ताक्षर</h3>
+            <div class="section grid-two">
+                <div>
+                    <label>बहाल धनि हस्ताक्षर: {{ form.owner_signature }}</label>
+                    {% if form.owner_signature.errors %}
+                        <div class="text-danger">{{ form.owner_signature.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label>बहाल वाला हस्ताक्षर: {{ form.tenant_signature }}</label>
+                    {% if form.tenant_signature.errors %}
+                        <div class="text-danger">{{ form.tenant_signature.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     
-        <p class="note">नोट: बैंक मार्फत वा अन्य महत्वपूर्ण जानकारीहरू भए, अनिवार्य प्रविष्ट गर्नुहोस्।</p>
+        <p class="note">नोट : हरेक महिनाको ......गते भित्र भाडा र अन्य महशुल बुझाउनुपर्ने छ, अन्यथा ...... प्रतिशत जरिवाना लाग्नेछ ।  </p>
     
         <button type="submit" class="submit-btn">पेश गर्नुहोस्</button>
     </form>

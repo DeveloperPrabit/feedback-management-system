@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html>
 <head>
     <style>
@@ -79,5 +79,154 @@
     <h3>Signatures</h3>
     <p>Owner Signature: {{ invoice.owner_signature|default:"-" }}</p>
     <p>Tenant Signature: {{ invoice.tenant_signature|default:"-" }}</p>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: 'Mangal', sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .container {
+            width: 100%;
+            padding: 0;
+            margin: 0 auto;
+        }
+        h2 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .section {
+            border: 1px solid #000;
+            padding: 5px 10px;
+            margin-bottom: 6px;
+        }
+        .title {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 5px;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .col {
+            width: 48%;
+        }
+        .col label {
+            font-weight: bold;
+        }
+        .note {
+            font-style: italic;
+            font-size: 11px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>भाडा रसिद / Rent Invoice</h2>
+
+    <div class="section">
+        <div class="row">
+            <div class="col"><label>भाडा महिना:</label> {{ invoice.rent_month }}</div>
+            <div class="col"><label>मिति:</label> {{ invoice.date }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>बहालवालाको नाम:</label> {{ invoice.tenant }}</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="title">बहालको विवरण</div>
+        <div class="row">
+            <div class="col"><label>घर नं.:</label> {{ invoice.house_number }}</div>
+            <div class="col"><label>फ्ल्याट नं.:</label> {{ invoice.flat_number }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>कोठा नं.:</label> {{ invoice.room_no }}</div>
+            <div class="col"><label>बिल्डिङ नाम:</label> {{ invoice.building_name }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>प्यान / भ्याट नं.:</label> {{ invoice.pan_or_vat_number }}</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="title">शुल्क विवरण</div>
+        <div class="row">
+            <div class="col"><label>भाडा रकम:</label> {{ invoice.rent_amount }}</div>
+            <div class="col"><label>पार्किङ शुल्क:</label> {{ invoice.parking_fee }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>बिजुली शुल्क:</label> {{ invoice.electricity_fee }}</div>
+            <div class="col"><label>सुरक्षा शुल्क:</label> {{ invoice.security_fee }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>पिउने पानी:</label> {{ invoice.drinking_water_fee }}</div>
+            <div class="col"><label>जेनेरेटर शुल्क:</label> {{ invoice.generator_power_backup_fee }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>साधारण पानी:</label> {{ invoice.normal_water_fee }}</div>
+            <div class="col"><label>इन्टरनेट/टेलिफोन/टिभी:</label> {{ invoice.internet_telephone_tv_fee }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>फोहर शुल्क:</label> {{ invoice.waste_fee }}</div>
+            <div class="col"><label>अन्य शुल्क:</label> {{ invoice.other_fee }}</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="title">जम्मा हिसाब</div>
+        <div class="row">
+            <div class="col"><label>छुट:</label> {{ invoice.discount }}</div>
+            <div class="col"><label>जम्मा:</label> {{ invoice.total_amount }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>कर:</label> {{ invoice.tax }}</div>
+            <div class="col"><label>कूल जम्मा:</label> {{ invoice.grand_total }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>अघिल्लो बाँकी:</label> {{ invoice.previous_due }}</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="title">बैंक विवरण</div>
+        <div class="row">
+            <div class="col"><label>बैंक नाम:</label> {{ invoice.bank_name }}</div>
+            <div class="col"><label>खाता नं.:</label> {{ invoice.account_number }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>खाता नाम:</label> {{ invoice.account_name }}</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="row">
+            <div class="col"><label>घरधनी हस्ताक्षर:</label> {{ invoice.owner_signature }}</div>
+            <div class="col"><label>बहालवाला हस्ताक्षर:</label> {{ invoice.tenant_signature }}</div>
+        </div>
+    </div>
+
+    <div class="section note">
+        <p>नोट: प्रत्येक महिनाको ५ गतेभित्र बहाल बुझाउनु पर्नेछ, अन्यथा १०% जरिवाना लाग्नेछ।</p>
+    </div>
+
+</div>
+
 </body>
 </html>
