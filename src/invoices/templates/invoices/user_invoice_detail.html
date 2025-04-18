@@ -111,36 +111,42 @@
             <a href="{% url 'invoices:download_invoice' invoice.uuid %}" class="btn btn-success me-2">
                 <i class="fas fa-download"></i> Download PDF
             </a>
-            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareModal">
+            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#shareInvoiceModal">
                 <i class="fas fa-share-alt"></i> Share
-            </a>
+            </button>
         </div>
 
-        <!-- Share Modal -->
-        <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="shareModalLabel">Share Invoice</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" action="">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Recipient Email</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter recipient's email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="message" class="form-label">Message (Optional)</label>
-                                <textarea class="form-control" id="message" name="message" rows="3" placeholder="Write a message..."></textarea>
-                            </div>
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Send</button>
-                            </div>
-                        </form>
-                    </div>
+        <!-- Share Invoice Modal -->
+        <div class="modal fade" id="shareInvoiceModal" tabindex="-1" aria-labelledby="shareInvoiceModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="shareInvoiceModalLabel">Share Invoice</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+        
+                <div class="modal-body text-center">
+                <p class="text-muted">Share this invoice via:</p>
+        
+                <!-- Social Share Buttons -->
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-primary m-1">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+        
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this invoice!" target="_blank" class="btn btn-outline-info m-1">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+        
+                <a href="https://api.whatsapp.com/send?text=Check out this invoice: {{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-success m-1">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+        
+                <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}&text=Check out this invoice" target="_blank" class="btn btn-outline-secondary m-1">
+                    <i class="fab fa-telegram-plane"></i> Telegram
+                </a>
+                </div>
+        
+            </div>
             </div>
         </div>
     </div>

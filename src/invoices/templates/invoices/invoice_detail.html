@@ -111,12 +111,16 @@
             <a href="{% url 'invoices:download_invoice' invoice.uuid %}" class="btn btn-success me-2">
                 <i class="fas fa-download"></i> Download PDF
             </a>
-            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareModal">
+            {% comment %} <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareModal">
                 <i class="fas fa-share-alt"></i> Share
-            </a>
+            </a> {% endcomment %}
+            <!-- Share Button -->
+            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#shareInvoiceModal">
+                <i class="fas fa-share-alt"></i> Share
+            </button>
         </div>
 
-        <!-- Share Modal -->
+        {% comment %} <!-- Share Modal -->
         <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -142,7 +146,41 @@
                     </div>
                 </div>
             </div>
+        </div> {% endcomment %}
+        <!-- Share Invoice Modal -->
+        <div class="modal fade" id="shareInvoiceModal" tabindex="-1" aria-labelledby="shareInvoiceModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="shareInvoiceModalLabel">Share Invoice</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+        
+                <div class="modal-body text-center">
+                <p class="text-muted">Share this invoice via:</p>
+        
+                <!-- Social Share Buttons -->
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-primary m-1">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+        
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this invoice!" target="_blank" class="btn btn-outline-info m-1">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+        
+                <a href="https://api.whatsapp.com/send?text=Check out this invoice: {{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-success m-1">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+        
+                <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}&text=Check out this invoice" target="_blank" class="btn btn-outline-secondary m-1">
+                    <i class="fab fa-telegram-plane"></i> Telegram
+                </a>
+                </div>
+        
+            </div>
+            </div>
         </div>
+        
     </div>
 </div>
 {% endblock dashboard_content %}

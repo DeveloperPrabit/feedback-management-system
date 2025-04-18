@@ -1,87 +1,4 @@
 {% comment %} <!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .invoice-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: left;
-        }
-    </style>
-</head>
-<body>
-    <div class="invoice-header">
-        <h1>Invoice</h1>
-        <p>Invoice No: {{ invoice.serial_number }}</p>
-        <p>Date: {{ invoice.date|date:"M d, Y" }}</p>
-    </div>
-
-    <h3>Tenant Information</h3>
-    <p>Name: {{ invoice.tenant.name }}</p>
-    <p>Email: {{ invoice.tenant.email }}</p>
-    <p>Mobile: {{ invoice.tenant.mobile }}</p>
-    <p>Address: {{ invoice.tenant.address }}</p>
-
-    <h3>Details</h3>
-    <table>
-        <tr>
-            <th>Item</th>
-            <th>Amount</th>
-        </tr>
-        <tr>
-            <td>Rent Amount</td>
-            <td>${{ invoice.rent_amount }}</td>
-        </tr>
-        <tr>
-            <td>Parking Fee</td>
-            <td>${{ invoice.parking_fee|default:"0.00" }}</td>
-        </tr>
-        <tr>
-            <td>Electricity Fee</td>
-            <td>${{ invoice.electricity_fee|default:"0.00" }}</td>
-        </tr>
-        <tr>
-            <td>Security Fee</td>
-            <td>${{ invoice.security_fee|default:"0.00" }}</td>
-        </tr>
-        <tr>
-            <td>Discount</td>
-            <td>-${{ invoice.discount|default:"0.00" }}</td>
-        </tr>
-        <tr>
-            <td>Tax</td>
-            <td>${{ invoice.tax|default:"0.00" }}</td>
-        </tr>
-        <tr>
-            <td><strong>Grand Total</strong></td>
-            <td><strong>${{ invoice.grand_total }}</strong></td>
-        </tr>
-    </table>
-
-    <h3>Bank Information</h3>
-    <p>Bank Name: {{ invoice.bank_name|default:"-" }}</p>
-    <p>Account Number: {{ invoice.account_number|default:"-" }}</p>
-    <p>Account Name: {{ invoice.account_name|default:"-" }}</p>
-
-    <h3>Signatures</h3>
-    <p>Owner Signature: {{ invoice.owner_signature|default:"-" }}</p>
-    <p>Tenant Signature: {{ invoice.tenant_signature|default:"-" }}</p>
-</body>
-</html> {% endcomment %}
-<!DOCTYPE html>
 <html lang="ne">
 <head>
     <meta charset="UTF-8">
@@ -146,23 +63,24 @@
 
     <div class="section">
         <div class="row">
+            <div class="col"><label>सि.नं:</label> {{invoice.invoice_number}} </div>
             <div class="col"><label>भाडा महिना:</label> {{ invoice.rent_month }}</div>
             <div class="col"><label>मिति:</label> {{ invoice.date }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>बहालवालाको नाम:</label> {{ invoice.tenant }}</div>
         </div>
     </div>
 
     <div class="section">
+        <div class="row">
+            <div class="col"><label>बहालवालाको नाम:</label> {{ invoice.tenant.name }}</div>
+        </div>
         <div class="title">बहालको विवरण</div>
         <div class="row">
             <div class="col"><label>घर नं.:</label> {{ invoice.house_number }}</div>
             <div class="col"><label>फ्ल्याट नं.:</label> {{ invoice.flat_number }}</div>
+            <div class="col"><label>कोठा, सटर, पसल, अन्य नं.:</label> {{ invoice.room_no }}</div>
         </div>
         <div class="row">
-            <div class="col"><label>कोठा नं.:</label> {{ invoice.room_no }}</div>
-            <div class="col"><label>बिल्डिङ नाम:</label> {{ invoice.building_name }}</div>
+            <div class="col"><label>घर, बिल्डिङ, अपार्टमेन्ट, बंगला नाम वा नम्बर :</label> {{ invoice.building_name }}</div>
         </div>
         <div class="row">
             <div class="col"><label>प्यान / भ्याट नं.:</label> {{ invoice.pan_or_vat_number }}</div>
@@ -172,39 +90,39 @@
     <div class="section">
         <div class="title">शुल्क विवरण</div>
         <div class="row">
-            <div class="col"><label>भाडा रकम:</label> {{ invoice.rent_amount }}</div>
-            <div class="col"><label>पार्किङ शुल्क:</label> {{ invoice.parking_fee }}</div>
+            <div class="col"><label>बहाल रकम:</label> {{ invoice.rent_amount }}</div>
+            <div class="col"><label>पार्किङ:</label> {{ invoice.parking_fee }}</div>
         </div>
         <div class="row">
-            <div class="col"><label>बिजुली शुल्क:</label> {{ invoice.electricity_fee }}</div>
-            <div class="col"><label>सुरक्षा शुल्क:</label> {{ invoice.security_fee }}</div>
+            <div class="col"><label>बिजुली:</label> {{ invoice.electricity_fee }}</div>
+            <div class="col"><label>सुरक्षा गार्ड:</label> {{ invoice.security_fee }}</div>
         </div>
         <div class="row">
             <div class="col"><label>पिउने पानी:</label> {{ invoice.drinking_water_fee }}</div>
-            <div class="col"><label>जेनेरेटर शुल्क:</label> {{ invoice.generator_power_backup_fee }}</div>
+            <div class="col"><label>जेनेरेटर, पावर ब्याकप:</label> {{ invoice.generator_power_backup_fee }}</div>
         </div>
         <div class="row">
             <div class="col"><label>साधारण पानी:</label> {{ invoice.normal_water_fee }}</div>
-            <div class="col"><label>इन्टरनेट/टेलिफोन/टिभी:</label> {{ invoice.internet_telephone_tv_fee }}</div>
+            <div class="col"><label>ईन्टरनेट, टेलिफोन, टिभी:</label> {{ invoice.internet_telephone_tv_fee }}</div>
         </div>
         <div class="row">
-            <div class="col"><label>फोहर शुल्क:</label> {{ invoice.waste_fee }}</div>
-            <div class="col"><label>अन्य शुल्क:</label> {{ invoice.other_fee }}</div>
+            <div class="col"><label>फोहोर सरसफाई:</label> {{ invoice.waste_fee }}</div>
+            <div class="col"><label>अन्य खर्च:</label> {{ invoice.other_fee }}</div>
         </div>
     </div>
 
     <div class="section">
-        <div class="title">जम्मा हिसाब</div>
+        <div class="title">जम्मा हिसाबको बिवरण</div>
         <div class="row">
-            <div class="col"><label>छुट:</label> {{ invoice.discount }}</div>
-            <div class="col"><label>जम्मा:</label> {{ invoice.total_amount }}</div>
+            <div class="col"><label>छुट रकम:</label> {{ invoice.discount }}</div>
+            <div class="col"><label>जम्मा रकम:</label> {{ invoice.total_amount }}</div>
         </div>
         <div class="row">
-            <div class="col"><label>कर:</label> {{ invoice.tax }}</div>
-            <div class="col"><label>कूल जम्मा:</label> {{ invoice.grand_total }}</div>
+            <div class="col"><label>बहाल कर:</label> {{ invoice.tax }}</div>
+            <div class="col"><label>कूल जम्मा रकम:</label> {{ invoice.grand_total }}</div>
         </div>
         <div class="row">
-            <div class="col"><label>अघिल्लो बाँकी:</label> {{ invoice.previous_due }}</div>
+            <div class="col"><label>अगाडिको बाँकी रकम:</label> {{ invoice.previous_due }}</div>
         </div>
     </div>
 
@@ -212,7 +130,9 @@
         <div class="title">बैंक विवरण</div>
         <div class="row">
             <div class="col"><label>बैंक नाम:</label> {{ invoice.bank_name }}</div>
-            <div class="col"><label>खाता नं.:</label> {{ invoice.account_number }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><label>खाता नम्बर:</label> {{ invoice.account_number }}</div>
         </div>
         <div class="row">
             <div class="col"><label>खाता नाम:</label> {{ invoice.account_name }}</div>
@@ -221,8 +141,8 @@
 
     <div class="section">
         <div class="row">
-            <div class="col"><label>घरधनी हस्ताक्षर:</label> {{ invoice.owner_signature }}</div>
-            <div class="col"><label>बहालवाला हस्ताक्षर:</label> {{ invoice.tenant_signature }}</div>
+            <div class="col"><label>बहाल धनि हस्ताक्षर:</label> {{ invoice.owner_signature }}</div>
+            <div class="col"><label>बहाल वाला हस्ताक्षर:</label> {{ invoice.tenant_signature }}</div>
         </div>
     </div>
 
@@ -232,5 +152,240 @@
 
 </div>
 
+</body>
+</html> {% endcomment %}
+
+
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: 'NotoSansDevanagari';
+            src: url('file:///home2/techprog/rental_system/static/fonts/NotoSansDevanagari-Regular.ttf');
+        }
+
+        body {
+            font-family: 'NotoSansDevanagari', sans-serif;
+            font-size: 14px;
+            margin: 0 auto;
+            padding: 10mm;
+            background-color: #eaf6ff;
+        }
+
+
+        .invoice-box {
+            width: 100%;
+        }
+
+        .section {
+            margin-top: 13px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #0077cc;
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 4px 3px;
+            vertical-align: top;
+        }
+
+        .value-box {
+            border: 1px solid #ccc;
+            padding: 1px 4px;
+            background-color: #f9f9f9;
+            min-height: 18px;
+            margin-left: 2px;
+        }
+
+        .logo-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 10px;
+        }
+    
+        .logo-row img {
+            position: absolute;
+            left: 0;
+            height: 40px;
+        }
+    
+        .heading {
+            font-size: 16px;
+            color: white;
+            background-color: #28a745;
+            padding: 6px 10px;
+            border-radius: 16px;
+        }
+
+        .signature-box {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+        }
+
+        .signature-box div {
+            width: 48%;
+        }
+
+        .note {
+            font-style: italic;
+            color: #555;
+        }
+
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="logo-row">
+            <img src="file:///home2/techprog/rental_system/static/images/bhadapay-logo.png" alt="Logo">
+            <div class="heading">Rent Invoice</div>
+        </div>
+
+        <div class="section" style="margin-top: 15px;">
+            <table>
+                <tr>
+                    <td>सि. नं.</td>
+                    <td><div class="value-box">{{invoice.serial_number}}</div></td>
+                    <td>भाडा महिना:</td>
+                    <td><div class="value-box">{{ invoice.rent_month }}</div></td>
+                    <td>मिति:</td>
+                    <td><div class="value-box">{{ invoice.date }}</div></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section" style="border-radius:15px; border:1px solid black; padding: 5px;">
+            <table>
+                <tr>
+                    <td>बहालवालाको नाम:</td>
+                    <td colspan="6"><div class="value-box">{{ invoice.tenant.name }}</div></td>
+                </tr>
+            </table>
+            <div class="section-title">बहालको विवरण:</div>
+            <table>
+                <tr>
+                    <td>घर नं.:</td>
+                    <td><div class="value-box">{{ invoice.house_number }}</div></td>
+                    <td>फ्ल्याट नं.:</td>
+                    <td><div class="value-box">{{ invoice.flat_number }}</div></td>
+                    <td>कोठा, सटर, पसल, अन्य नं.:</td>
+                    <td><div class="value-box">{{ invoice.room_no }}</div></td>
+                </tr>
+                <tr>
+                    <td colspan="6">घर, बिल्डिङ, अपार्टमेन्ट, बंगला नाम वा नम्बर :<div class="value-box">{{ invoice.building_name }}</div></td>
+                </tr>
+                <tr>
+                    <td colspan="6">प्यान / भ्याट नं.:<div class="value-box">{{ invoice.pan_or_vat_number }}</div></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section" style="border-radius:15px; border:1px solid black; padding: 5px;">
+            <div class="section-title">शुल्क विवरण:</div>
+            <table>
+                <tr>
+                    <td>बहाल रकम:</td>
+                    <td><div class="value-box">{{ invoice.rent_amount }}</div></td>
+                    <td>पार्किङ:</td>
+                    <td><div class="value-box">{{ invoice.parking_fee }}</div></td>
+                </tr>
+                <tr>
+                    <td>बिजुली:</td>
+                    <td><div class="value-box">{{ invoice.electricity_fee }}</div></td>
+                    <td>सुरक्षा गार्ड:</td>
+                    <td><div class="value-box">{{ invoice.security_fee }}</div></td>
+                </tr>
+                <tr>
+                    <td>पिउने पानी:</td>
+                    <td><div class="value-box">{{ invoice.drinking_water_fee }}</div></td>
+                    <td>जेनरेटर, पावर ब्याकअप:</td>
+                    <td><div class="value-box">{{ invoice.generator_power_backup_fee }}</div></td>
+                </tr>
+                <tr>
+                    <td>साधारण पानी:</td>
+                    <td><div class="value-box">{{ invoice.normal_water_fee }}</div></td>
+                    <td>इन्टरनेट, टेलिफोन, टिभी:</td>
+                    <td><div class="value-box">{{ invoice.internet_telephone_tv_fee }}</div></td>
+                </tr>
+                <tr>
+                    <td>फोहोर सरसफाई:</td>
+                    <td><div class="value-box">{{ invoice.waste_fee }}</div></td>
+                    <td>अन्य खर्च:</td>
+                    <td><div class="value-box">{{ invoice.other_fee }}</div></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section" style="border-radius:15px; border:1px solid black; padding: 5px;">
+            <div class="section-title">जम्मा हिसाबको विवरण:</div>
+            <table>
+                <tr>
+                    <td>छुट रकम:</td>
+                    <td><div class="value-box">{{ invoice.discount }}</div></td>
+                    <td>जम्मा रकम:</td>
+                    <td><div class="value-box">{{ invoice.total_amount }}</div></td>
+                </tr>
+                <tr>
+                    <td>बहाल कर:</td>
+                    <td><div class="value-box">{{ invoice.tax }}</div></td>
+                    <td>कूल जम्मा रकम:</td>
+                    <td><div class="value-box">{{ invoice.grand_total }}</div></td>
+                </tr>
+                <tr>
+                    <td colspan="4">अगाडिको बाँकी रकम:<div class="value-box">{{ invoice.previous_due }}</div></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section" style="border-radius:15px; border:1px solid black; padding: 5px;">
+            <div class="section-title">बैंक विवरण:</div>
+            <table>
+                <tr>
+                    <td>बैंक नाम:</td>
+                    <td><div class="value-box">{{ invoice.bank_name }}</div></td>
+                </tr>
+                <tr>
+                    <td>खाता नम्बर:</td>
+                    <td><div class="value-box">{{ invoice.account_number }}</div></td>
+                </tr>
+                <tr>
+                    <td>खाता नाम:</td>
+                    <td><div class="value-box">{{ invoice.account_name }}</div></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section signature-box" style="border-radius:15px; border:1px solid black; padding: 20px;">
+            <div>
+                <label>बहाल धनि हस्ताक्षर:</label>
+                <div class="value-box">__________</div>
+            </div>
+            <div>
+                <label>बहाल वाला हस्ताक्षर:</label>
+                <div class="value-box">__________</div>
+            </div>
+        </div>
+
+        <div class="section note">
+            <p>नोट: प्रत्येक महिनाको ५ गतेभित्र बहाल बुझाउनु पर्नेछ, अन्यथा १०% जरिवाना लाग्नेछ।</p>
+        </div>
+    </div>
 </body>
 </html>
