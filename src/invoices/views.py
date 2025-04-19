@@ -185,7 +185,7 @@ def download_invoice_pdf(request, invoice_uuid):
     invoice = get_object_or_404(Invoice, uuid=invoice_uuid)
 
     html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice})
-    html = HTML(string=html_string)
+    html = HTML(string=html_string, base_url='/home2/techprog/rental_system/src/staticfiles/')
 
     pdf_file = io.BytesIO()
     html.write_pdf(target=pdf_file)
