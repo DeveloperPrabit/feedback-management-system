@@ -1,3 +1,4 @@
+{% load static %}
 {% comment %} <!DOCTYPE html>
 <html lang="ne">
 <head>
@@ -155,7 +156,7 @@
 </body>
 </html> {% endcomment %}
 
- 
+
 <!DOCTYPE html>
 <html lang="ne">
 <head>
@@ -163,7 +164,7 @@
     <style>
         @font-face {
             font-family: 'NotoSansDevanagari';
-            src: url('{{static_url}}fonts/NotoSansDevanagari-Regular.ttf') format('truetype');
+            src: url('{% static "fonts/NotoSansDevanagari-Regular.ttf" %}') format('truetype');
         }    
 
         body {
@@ -385,9 +386,6 @@
 
         <div class="section note">
             <p>नोट: प्रत्येक महिनाको ५ गतेभित्र बहाल बुझाउनु पर्नेछ, अन्यथा १०% जरिवाना लाग्नेछ।</p>
-            <p style="color: red;">DEBUG: {{ invoice.tenant }}</p>
-            <p style="color: red;">DEBUG: {{ invoice.tenant.name }}</p>
-            <p style="color: red;">DEBUG: {{ invoice.bank_name }}</p>
         </div>
     </div>
 </body>

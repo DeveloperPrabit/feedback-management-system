@@ -15,7 +15,6 @@ from .forms import InvoiceForm
 from tenants.models import Tenant
 from users.models import UserType
 from django.conf import settings
-import os
 import io
 # Create your views here.
 
@@ -187,8 +186,7 @@ def download_invoice_pdf(request, invoice_uuid):
         uuid=invoice_uuid
     )
 
-    static_url = settings.STATIC_URL
-    html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice, 'static_url': static_url})
+    html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice})
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
 
     pdf_file = io.BytesIO()
