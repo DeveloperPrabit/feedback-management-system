@@ -1,0 +1,31 @@
+services:
+  web:
+    image: "rental_system:dev"
+    build:
+      # Uses a specific build stage named development_build from the Dockerfile.
+      #This is useful for multi-stage builds where you can define different stages for different environments (e.g., development, production).
+      target: development_build
+
+      #Sets the build context to the current directory.
+      #The Docker daemon will use this directory to find the Dockerfile and any files referenced within it.
+      context: .
+
+      #Lists images to use as a cache source. This can speed up the build process by reusing layers from these images.
+      cache_from:
+        - "rental_system:dev"
+        - "rental_system:latest"
+        - "*"
+      args:
+        #This argument can be accessed within the Dockerfile using the ARG instruction and can influence the build process
+        DJANGO_ENV: development
+
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    env_file:
+      - ./src/.env
+    volumes:
+      - ./src:/code
+  
+
+  
