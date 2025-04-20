@@ -182,7 +182,10 @@ class DeleteInvoiceView(View):
     
 
 def download_invoice_pdf(request, invoice_uuid):
-    invoice = get_object_or_404(Invoice, uuid=invoice_uuid)
+    invoice = get_object_or_404(
+        Invoice.objects.select_related('tenant'),
+        uuid=invoice_uuid
+    )
 
     html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice})
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
