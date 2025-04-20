@@ -187,7 +187,8 @@ def download_invoice_pdf(request, invoice_uuid):
         uuid=invoice_uuid
     )
 
-    html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice})
+    static_url = settings.STATIC_URL
+    html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice, 'static_url': static_url})
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
 
     pdf_file = io.BytesIO()
