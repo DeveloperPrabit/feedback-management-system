@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from users.models import UserType
 from .forms import TenantForm
+from users.views import get_system_logo
 
 
 # Create your views here.
@@ -49,6 +50,11 @@ class TenantListView(LoginRequiredMixin, ListView):
             return ['tenants/tenant_list.html']
         else:
             return ['tenants/user_tenant_list.html']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['logo'] = get_system_logo()
+        return context
         
 
 class ManageTenantView(LoginRequiredMixin, ListView):
@@ -79,6 +85,12 @@ class ManageTenantView(LoginRequiredMixin, ListView):
                 ).order_by('-created_at')
             else:
                 return Tenant.objects.filter(user=self.request.user).order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["logo"] = get_system_logo() 
+        return context
+    
     
 
 
@@ -155,10 +167,6 @@ class TenantDetailsView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             return True
         return tenant.user == self.request.user
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['tenant'] = self.object
-        return context
     
     def get_template_names(self):
         if self.request.user.user_type == UserType.ADMIN:
@@ -166,6 +174,11 @@ class TenantDetailsView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         else:
             return ['tenants/user_tenant_details.html']
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tenant'] = self.object
+        context['logo'] = get_system_logo()
+        return context
     
 
 

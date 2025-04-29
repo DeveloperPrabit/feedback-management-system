@@ -21,7 +21,9 @@ class Invoice(TimestampMixin):
         max_length=20
     )
 
-    date = models.DateField()
+    date = models.CharField(
+        max_length=20, 
+    )
 
     tenant = models.ForeignKey(
         Tenant,
@@ -51,6 +53,7 @@ class Invoice(TimestampMixin):
     pan_or_vat_number = models.CharField(
         max_length=50,
         null=True,
+        blank=True
     )
 
     rent_amount = models.DecimalField(

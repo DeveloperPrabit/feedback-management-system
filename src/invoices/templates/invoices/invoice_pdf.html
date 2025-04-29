@@ -255,7 +255,7 @@
 <body>
     <div class="invoice-box">
         <div class="logo-row">
-            <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
+            <img src="{% if logo %} {{ logo.logo.url }} {%else%} {% static 'images/logo.jpeg' %} {% endif %}" alt="Logo">
             <div class="heading">Rent Invoice</div>
         </div>
 
@@ -387,6 +387,10 @@
         <div class="section note">
             <p>नोट: प्रत्येक महिनाको ५ गतेभित्र बहाल बुझाउनु पर्नेछ, अन्यथा १०% जरिवाना लाग्नेछ।</p>
         </div>
+    </div>
+    <!-- generated date -->
+    <div style="text-align: center; font-size: 10px; margin-top: 20px;">
+        <p>Generated on: {{ generated_date }}</p>
     </div>
 </body>
 </html>

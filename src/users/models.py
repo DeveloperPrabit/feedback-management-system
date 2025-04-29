@@ -3,6 +3,7 @@ import random
 from django.utils import timezone
 from datetime import timedelta
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from rental_system.mixins import TimestampMixin
@@ -108,5 +109,52 @@ class PasswordResetOTP(TimestampMixin):
     )
 
     def is_valid(self):
-        return timezone.now() <= self.created_at + timedelta(minutes=60)
+        return timezone.now() <= (self.updated_at + timedelta(minutes=60))
     
+
+class SystemLogo(TimestampMixin):
+    logo = models.ImageField(
+        upload_to='system_logo/',
+        blank=True,
+        null=True
+    )
+
+    def __str__(self):
+        return f"System Logo {self.id}"
+
+    class Meta:
+        verbose_name = _('system logo')
+        verbose_name_plural = _('system logos')
+        ordering = ['-created_at']
+    
+
+
+class Contact(TimestampMixin):
+    email = models.EmailField(
+        _('email address'),
+        unique=True, 
+    )
+
+    phone = models.CharField(
+        _('phone number'),
+        max_length=15,
+    )
+
+    address = models.CharField(
+        _('address'),
+        max_length=255,
+        blank=True,
+    )
+
+
+    def __str__(self):
+        return self.email
+    
+    def clean(self):
+        super().clean()
+        if not self.pk and self.__class__.objects.exists():
+            raise ValidationError(_('Only one contact information can be created.'))
+        
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)

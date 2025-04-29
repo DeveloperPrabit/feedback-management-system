@@ -8,5 +8,6 @@ urlpatterns = [
     path('invoice/<uuid:invoice_uuid>/', views.InvoiceDetailView.as_view(), name='invoice_detail'),
     path('manage-invoices/', views.ManageInvoicesView.as_view(), name='manage_invoices'),
     path('delete-invoice/<uuid:invoice_uuid>/', views.DeleteInvoiceView.as_view(), name='delete_invoice'),
-    path('invoice/<uuid:invoice_uuid>/download/', views.download_invoice_pdf, name='download_invoice')
+    path('invoice/<uuid:invoice_uuid>/download/', views.download_invoice_pdf, name='download_invoice'),
+    path('update-status/<uuid:invoice_uuid>/', views.update_status, name='update_invoice_status'),
 ]

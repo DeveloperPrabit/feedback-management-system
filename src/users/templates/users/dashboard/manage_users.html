@@ -42,9 +42,9 @@
                         <tr>
                             <th>S.N</th>
                             <th>Name</th>
+                            <th>Address</th>
                             <th>Email</th>
-                            <th>Role</th>
-                            <th>Status</th>
+                            <th>Mobile</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -60,13 +60,15 @@
                                     No Name Provided
                                 {% endif %}
                             </td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.user_type }}</td>
                             <td>
-                                <span class="status-badge {{ user.status }}">
-                                {% if user.is_active %} Active {% else %} Not active {% endif %}
-                                </span>
+                                {% if user.full_address %}
+                                    {{ user.full_address }}
+                                {% else %}
+                                    No Address Provided
+                                {% endif %}
                             </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.mobile }}</td>
                             <td>
                                 <button class="btn btn-edit">
                                     <a href="{% url 'users:user_update'  user.uuid %}"><i class="fas fa-edit"></i></a>

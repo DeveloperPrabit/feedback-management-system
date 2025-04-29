@@ -18,7 +18,7 @@ from .forms import (
     CustomPasswordChangeForm,
     EditUserForm
 )
-from .models import UserType, PasswordResetOTP
+from .models import UserType, PasswordResetOTP, SystemLogo, Contact
 from tenants.models import Tenant
 from invoices.models import Invoice
 
@@ -26,13 +26,25 @@ from invoices.models import Invoice
 
 User = get_user_model()
 
+def get_system_logo():
+    try:
+        logo = SystemLogo.objects.last()
+    except SystemLogo.DoesNotExist:
+        logo = None
+    return logo
+
 class UserRegisterView(View):
     template_name = 'users/register.html'
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect("users:dashboard")
+        logo = get_system_logo()
+
+        context = {
+            'logo': logo,
+        }
         # Check if the user is already authenticated
-        return render(request, self.template_name)
+        return render(request, self.template_name, context)
     
     def post(self, request):
         email = request.POST.get('email')
@@ -104,7 +116,8 @@ class UserLoginView(View):
         if request.user.is_authenticated:
             return redirect("users:dashboard")
         form = UserLoginForm()
-        return render(request, 'users/login.html', {'form': form})
+        logo = get_system_logo()
+        return render(request, 'users/login.html', {'form': form, 'logo': logo})
     
     def post(self, request):
         form = UserLoginForm(request, data=request.POST)
@@ -119,7 +132,9 @@ class UserLoginView(View):
                 messages.error(request, "Invalid email or password.")
         else:
             messages.error(request, "Invalid form submission.")
-        return render(request, 'users/login.html', {'form': form})
+        
+        logo = get_system_logo()
+        return render(request, 'users/login.html', {'form': form, 'logo': logo})
 
 class UserLogoutView(View):
     def get(self, request):
@@ -168,6 +183,7 @@ class DashboardView(View):
                 'invoices': invoices,
                 'paid_invoices': paid_invoices,
                 'unpaid_invoices': unpaid_invoices,
+                'logo': get_system_logo(),            
             }
             return render(request, 'users/dashboard/admin_index.html', context)
         else:
@@ -176,6 +192,7 @@ class DashboardView(View):
                 'invoices': Invoice.objects.filter(tenant__user=request.user).count(),
                 'paid_invoices': Invoice.objects.filter(tenant__user=request.user, status='Paid').count(),
                 'unpaid_invoices': Invoice.objects.filter(tenant__user=request.user, status='Unpaid').count(),
+                'logo': get_system_logo(),
             }
             return render(request, 'users/dashboard/user_index.html', context)
     
@@ -206,6 +223,7 @@ class ViewUsersView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET.get('search', '')
+        context['logo'] = get_system_logo()
         return context
     
     # def get(self, request):
@@ -294,7 +312,7 @@ class AddUserView(View):
         if request.user.user_type != UserType.ADMIN:
             messages.error(request, "You do not have permission to access this page.")
             return redirect("users:dashboard")
-        return render(request, self.template_name)
+        return render(request, self.template_name, {"logo": get_system_logo()})
     
     def post(self, request):
         if request.user.user_type != UserType.ADMIN:
@@ -372,6 +390,7 @@ class ManageUsersView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET.get('search', '')
+        context['logo'] = get_system_logo()
         return context
 
     # def get(self, request):
@@ -410,11 +429,22 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         if password:
             self.object.set_password(password)  # Set hashed password
         return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['logo'] = get_system_logo()
+        return context
 
 
 class ForgotPasswordView(View):
     def get(self, request):
-        return render(request, 'users/forgot_password.html')
+        if request.user.is_authenticated:
+            return redirect("users:dashboard")
+        logo = get_system_logo()
+        context = {
+            'logo': logo,
+        }
+        return render(request, 'users/forgot_password.html', context)
 
     def post(self, request):
         email = request.POST.get('email')
@@ -429,7 +459,7 @@ class ForgotPasswordView(View):
         otp_record = PasswordResetOTP.objects.filter(user=user).order_by('-created_at').first()
         if otp_record:
             otp_record.otp = otp
-            otp_record.save(update_fields=['otp', 'created_at'])
+            otp_record.save(update_fields=['otp', 'created_at', 'updated_at'])
         else:
             PasswordResetOTP.objects.create(user=user, otp=otp)
 
@@ -441,7 +471,14 @@ class ForgotPasswordView(View):
 
 class VerifyOTPView(View):
     def get(self, request):
-        return render(request, 'users/verify_otp.html')
+        if request.user.is_authenticated:
+            return redirect("users:dashboard")
+        system_logo = get_system_logo()
+        context = {
+            'logo': system_logo,
+        }
+        
+        return render(request, 'users/verify_otp.html', context)
 
     def post(self, request):
         otp = request.POST.get('otp')
@@ -468,7 +505,12 @@ class ResetPasswordView(View):
         if not request.session.get('otp_verified'):
             messages.error(request, "Please verify your OTP first.")
             return redirect("users:forgot_password")
-        return render(request, 'users/reset_password.html')
+        
+        system_logo = get_system_logo()
+        context = {
+            'logo': system_logo,
+        }
+        return render(request, 'users/reset_password.html', context)
     
     @transaction.atomic
     def post(self, request):
@@ -492,3 +534,15 @@ class ResetPasswordView(View):
         request.session.flush()
         messages.success(request, "Password reset successfully. You can now log in.")
         return redirect('users:login')
+    
+
+@method_decorator(login_required, name='dispatch')
+class ContactView(View):
+    def get(self, request):
+        logo = get_system_logo()
+        contact = Contact.objects.first()
+        context = {
+            'logo': logo,
+            'contact': contact,
+        }
+        return render(request, 'users/contact.html', context)

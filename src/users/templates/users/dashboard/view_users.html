@@ -42,9 +42,9 @@
                         <tr>
                             <th>S.N</th>
                             <th>Name</th>
+                            <th>Address</th>
                             <th>Email</th>
-                            <th>Role</th>
-                            <th>Status</th>
+                            <th>Mobile</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,12 +59,10 @@
                                     No Name Provided
                                 {% endif %}
                             </td>
+                            <td>{{ user.full_address }}</td>
                             <td>{{ user.email }}</td>
-                            <td>{{ user.user_type }}</td>
                             <td>
-                                <span class="status-badge {{ user.status }}">
-                                {% if user.is_active %} Active {% else %} Not active {% endif %}
-                                </span>
+                                {{ user.mobile}}
                             </td>
                             {% comment %} <td>
                                 <button class="btn btn-edit">

@@ -4,6 +4,21 @@ from tenants.models import Tenant
 from django.core.exceptions import ValidationError
 
 
+NEPALI_MONTH_CHOICES = [
+    ('बैशाख', 'बैशाख'),
+    ('जेठ', 'जेठ'),
+    ('असार', 'असार'),
+    ('श्रावण', 'श्रावण'),
+    ('भदौ', 'भदौ'),
+    ('आश्विन', 'आश्विन'),
+    ('कार्तिक', 'कार्तिक'),
+    ('मंसिर', 'मंसिर'),
+    ('पुष', 'पुष'),
+    ('माघ', 'माघ'),
+    ('फाल्गुण', 'फाल्गुण'),
+    ('चैत्र', 'चैत्र'),
+]
+
 class InvoiceForm(forms.ModelForm):
     class Meta:
        model = Invoice
@@ -39,8 +54,8 @@ class InvoiceForm(forms.ModelForm):
        )
        widgets = {
            'tenant': forms.Select(attrs={'class': 'form-control'}),
-           'date': forms.DateInput(attrs={'type': 'date'}),
-           'rent_month': forms.DateInput(attrs={'type': 'month'}),
+           'date': forms.HiddenInput(),
+           'rent_month': forms.Select(choices=NEPALI_MONTH_CHOICES ,attrs={'class': 'form-control'}),
 
        }
 

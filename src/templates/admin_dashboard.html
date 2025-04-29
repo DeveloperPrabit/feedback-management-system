@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RentalMaster Pro | Admin Dashboard</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/logo.jpeg' %}">
+    
+    <title>Rent Hub | Property Rent Management System | Nepal | Admin Dashboard</title>
     
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >
     <link rel="stylesheet" href="{% static 'css/bootstrap-grid.min.css' %}">
@@ -18,17 +20,18 @@
     
     <!-- Dashboard CSS -->
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    
 
     {% block css %}{% endblock css %}
 </head>
 
-<body class="dashboard-body">
+<body class="dashboard-body d-flex flex-column">
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="brand-header">
             <a href="{% url 'users:dashboard' %}" class="brand-link">
-                <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="brand-logo">
-                <h5 class="brand-title">Rental Management System</h5>
+                <img src="{% if logo %} {{ logo.logo.url }} {% else %} {% static 'images/logo.jpeg' %} {% endif %}" alt="Logo" class="brand-logo">
+                <h5 class="brand-title">Rent Hub | Property Rent Management System</h5>
             </a>
         </div>
         
@@ -109,6 +112,12 @@
         {% block dashboard_content %}
         {% endblock dashboard_content %}
     </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-3 bg-light border-top">
+        <small class="text-muted">&copy; 2025 <strong>Rent Hub</strong> | All Rights Reserved.</small>
+    </footer>
+    
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

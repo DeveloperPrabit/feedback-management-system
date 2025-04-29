@@ -10,7 +10,7 @@
 {% block dashboard_content %}
 <div class="invoice-container">
     <header>
-        <img src="logo.png" alt="Bhada Pay Logo" class="logo">
+        <img src="{% if logo %} {{ logo.logo.url }} {%else%} {% static 'images/logo.jpeg' %} {% endif %}" alt="Bhada Pay Logo" class="logo">
         <h1 class="invoice-title">Rent Invoice</h1>
     </header>
 
@@ -47,7 +47,8 @@
                 {% endif %}
             </div>
             <div>
-                <label>मिति: {{ form.date }}</label>
+                <label>मिति:</label>
+                <input type="text" class="date-picker" id="nepaliDate" name="date" placeholder="YYYY-MM-DD" required>
                 {% if form.date.errors %}
                     <div class="text-danger">{{ form.date.errors }}</div>
                 {% endif %}
@@ -252,5 +253,35 @@
         <button type="submit" class="submit-btn">पेश गर्नुहोस्</button>
     </form>
 </div>
+
+<!-- this should go after your </body> -->
+<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://unpkg.com/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.css"
+crossorigin="anonymous" />
+
+<script src="https://cdn.jsdelivr.net/npm/nepali-date-converter@2.2.0/dist/nepali-date-converter.umd.js"></script>
+
+<script>
+    {% comment %} $('.date-picker').nepaliDatePicker({
+        dateFormat: '%D, %M %d, %y',
+        closeOnDateSelect: true,
+        minDate: 'सोम, जेठ १०, २०७३',
+        maxDate: 'मंगल, जेठ ३२, २०७३'
+      }); {% endcomment %}
+
+     $('#nepaliDate').nepaliDatePicker({
+        dateFormat: '%y-%m-%d',
+        closeOnDateSelect: true
+    });
+
+    {% comment %}
+    $('#nepaliDate').on('dateSelect', function (event) {
+        const nepaliDate = event.datePickerData.dateObject;
+        const engDate = NepaliFunctions.AD.fromBs(nepaliDate.bsYear, nepaliDate.bsMonth, nepaliDate.bsDate);
+        const formattedDate = `${engDate.year}-${String(engDate.month).padStart(2, '0')}-${String(engDate.date).padStart(2, '0')}`;
+        $('input[name="date"]').val(formattedDate); // set hidden input field used by Django
+    }); {% endcomment %}
+</script>
 
 {% endblock dashboard_content %}

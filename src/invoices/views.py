@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from users.views import get_system_logo
 from django.views.generic import ListView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
@@ -15,6 +16,8 @@ from .forms import InvoiceForm
 from tenants.models import Tenant
 from users.models import UserType
 from django.conf import settings
+from django.views.decorators.http import require_POST
+from users.views import get_system_logo
 import io
 # Create your views here.
 
@@ -73,6 +76,11 @@ class InvoiceListView(LoginRequiredMixin, ListView):
             return ['invoices/invoice_list.html']
         return ['invoices/user_invoice_list.html']
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['logo'] = get_system_logo()
+        return context
+    
     
 class ManageInvoicesView(LoginRequiredMixin, ListView):
     model = Invoice
@@ -117,6 +125,11 @@ class ManageInvoicesView(LoginRequiredMixin, ListView):
 
         return queryset.order_by('-created_at') 
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['logo'] = get_system_logo()
+        return context
+
 
 @method_decorator(login_required, name='dispatch')
 class InvoiceCreateView(View):
@@ -124,15 +137,17 @@ class InvoiceCreateView(View):
 
     def get(self, request, *args, **kwargs):
         tenant_uuid = request.GET.get('tenant_uuid')
+        logo = get_system_logo()
         if tenant_uuid:
             tenant = get_object_or_404(Tenant, uuid=tenant_uuid, user=request.user)
-            form = InvoiceForm(initial={'tenant': tenant})
+            form = InvoiceForm(initial={'tenant': tenant, 'logo': logo})
         else:
             form = InvoiceForm()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'logo': logo})
 
     def post(self, request, *args, **kwargs):
         form = InvoiceForm(request.POST)
+        logo = get_system_logo()
         if form.is_valid():
             # Generate a unique serial number for the invoice
             serial_number = get_invoice_serial_number()
@@ -143,7 +158,7 @@ class InvoiceCreateView(View):
             messages.success(request, "इनभ्वाइस सफलतापूर्वक पेश गरियो!")
             return redirect('invoices:view_invoices')
         messages.error(request, form.errors)
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'logo': logo})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -163,6 +178,11 @@ class InvoiceDetailView(DetailView):
         if self.request.user.user_type == UserType.ADMIN:
             return ['invoices/invoice_detail.html']
         return ['invoices/user_invoice_detail.html']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['logo'] = get_system_logo()
+        return context
 
 @method_decorator(login_required, name='dispatch')
 class DeleteInvoiceView(View):
@@ -186,7 +206,11 @@ def download_invoice_pdf(request, invoice_uuid):
         uuid=invoice_uuid
     )
 
-    html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice})
+    generated_date = datetime.now().strftime("%Y-%m-%d")
+
+    logo = get_system_logo()
+
+    html_string = render_to_string('invoices/invoice_pdf.html', {'invoice': invoice, 'logo': logo, 'generated_date': generated_date})
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
 
     pdf_file = io.BytesIO()
@@ -196,3 +220,16 @@ def download_invoice_pdf(request, invoice_uuid):
     response = HttpResponse(pdf_file.read(), content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="invoice_{invoice.serial_number}.pdf"'
     return response
+
+@login_required
+@require_POST
+def update_status(request, invoice_uuid):
+    invoice = get_object_or_404(Invoice, uuid=invoice_uuid)
+    new_status = request.POST.get('status')
+
+    if new_status in ['paid', 'unpaid', 'overdue']:
+        invoice.status = new_status
+        invoice.save()
+    else:
+        messages.error(request, "Invalid status.")
+    return redirect('invoices:manage_invoices')

@@ -7,10 +7,10 @@
 {% endblock css %}
 
 {% block maincontent %}
-<div class="login-container">
+<div class="login-container" style="width: 140%;">
     <!-- Logo at the top -->
     <div class="logo" style="text-align: center; margin-bottom: 20px;">
-        <img src="{% static 'images/logo.jpeg' %}" alt="Site Logo" style="max-height: 80px;">
+        <img src="{% if logo %} {{ logo.logo.url }} {%else%} {% static 'images/logo.jpeg' %} {% endif %}" alt="Site Logo" style="max-height: 80px;">
     </div>
 
     <h1>Login to Your Account</h1>
