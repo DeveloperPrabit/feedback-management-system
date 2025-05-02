@@ -21,6 +21,7 @@ from .forms import (
 from .models import UserType, PasswordResetOTP, SystemLogo, Contact
 from tenants.models import Tenant
 from invoices.models import Invoice
+from .utils import send_otp_email
 
 # Create your views here.
 
@@ -28,7 +29,7 @@ User = get_user_model()
 
 def get_system_logo():
     try:
-        logo = SystemLogo.objects.last()
+        logo = SystemLogo.objects.latest('-created_at')
     except SystemLogo.DoesNotExist:
         logo = None
     return logo
@@ -464,7 +465,8 @@ class ForgotPasswordView(View):
             PasswordResetOTP.objects.create(user=user, otp=otp)
 
         # Send OTP to user's email (implement your email sending logic here)
-        messages.success(request, f"your otp is {otp}.")
+        send_otp_email(user.email, otp)
+        messages.success(request, f"An OTP has been sent to {user.email}.")
         request.session['request_user_id'] = str(user.uuid)
         return redirect('users:verify_otp')
     

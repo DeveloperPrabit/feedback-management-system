@@ -229,3 +229,14 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 LOGIN_URL = "/"
+
+
+# settings.py
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')  # your gmail address
+EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')  # your gmail password
+DEFAULT_FROM_EMAIL = env.str('DEFAULT_FROM_EMAIL')  # your gmail address

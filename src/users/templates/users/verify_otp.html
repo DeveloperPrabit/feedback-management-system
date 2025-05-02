@@ -30,6 +30,9 @@
         <input type="text" name="otp" class="form-control" placeholder="Enter the OTP sent to your email" required>
         <!-- Verify otp button -->
         <button type="submit" class="btn btn-primary mt-4">Verify OTP</button>
+        <!-- back button -->
+        <button type="button" class="btn btn-secondary mt-1" onclick="window.location.href='{% url 'users:login' %}'">Back to Login</button>
+        <!-- resend otp link -->
         <div class="resend-otp">
             <p>Didn't receive the OTP? <a href="{% url 'users:forgot_password' %}">Resend OTP</a></p>
         </div>

@@ -142,7 +142,7 @@ class InvoiceCreateView(View):
             tenant = get_object_or_404(Tenant, uuid=tenant_uuid, user=request.user)
             form = InvoiceForm(initial={'tenant': tenant, 'logo': logo})
         else:
-            form = InvoiceForm()
+            form = InvoiceForm(user=request.user)
         return render(request, self.template_name, {'form': form, 'logo': logo})
 
     def post(self, request, *args, **kwargs):
@@ -206,7 +206,7 @@ def download_invoice_pdf(request, invoice_uuid):
         uuid=invoice_uuid
     )
 
-    generated_date = datetime.now().strftime("%Y-%m-%d")
+    generated_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     logo = get_system_logo()
 
