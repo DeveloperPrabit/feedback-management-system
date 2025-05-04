@@ -36,10 +36,10 @@
 
             <!-- Date Range Filters -->
             <div class="col-md-3">
-                <input type="date" name="start_date" class="form-control" placeholder="Start Date" value="{{ start_date }}">
+                <input type="text" id="start_date" name="start_date" class="form-control" placeholder="yyyy-mm-dd" value="{{ start_date }}">
             </div>
             <div class="col-md-3">
-                <input type="date" name="end_date" class="form-control" placeholder="End Date" value="{{ end_date }}">
+                <input type="text" id="end_date" name="end_date" class="form-control" placeholder="yyyy-mm-dd" value="{{ end_date }}">
             </div>
 
             <!-- Status Filter -->
@@ -90,9 +90,14 @@
                     <td>Rs.{{ invoice.tax }}</td>
                     <td>Rs.{{ invoice.grand_total }}</td>
                     <td>
-                        <span class="badge {% if invoice.status == 'paid' %}bg-success{% elif invoice.status == 'overdue' %}bg-danger{% else %}bg-warning{% endif %}">
-                            {{ invoice.status|title }}
-                        </span>
+                        <form method="POST" action="{% url 'invoices:update_invoice_status' invoice.pk %}">
+                            {% csrf_token %}
+                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                <option value="paid" {% if invoice.status == "paid" %}selected{% endif %}>Paid</option>
+                                <option value="unpaid" {% if invoice.status == "unpaid" %}selected{% endif %}>Unpaid</option>
+                                <option value="overdue" {% if invoice.status == "overdue" %}selected{% endif %}>Overdue</option>
+                            </select>
+                        </form>
                     </td>
                     <td>
                         <a href="{% url 'invoices:invoice_detail' invoice.uuid %}" class="btn btn-sm btn-info">View</a>
@@ -154,4 +159,22 @@
     </div>
     {% endif %}
 </div>
+
+<!-- this should go after your </body> -->
+<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://unpkg.com/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.css"
+crossorigin="anonymous" />
+
+<script>
+    $('#start_date').nepaliDatePicker({
+        dateFormat: '%y-%m-%d',
+        closeOnDateSelect: true
+    });
+
+    $('#end_date').nepaliDatePicker({
+        dateFormat: '%y-%m-%d',
+        closeOnDateSelect: true
+    });
+</script>
 {% endblock dashboard_content %}

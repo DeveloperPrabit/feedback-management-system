@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" type="image/png" href="{% static 'images/bhada-hub.jpg' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.jpg' %}">
     
     <title>Rent Hub | Property Rent Management System | Nepal | Admin Dashboard</title>
     
@@ -31,7 +31,7 @@
         <div class="brand-header">
             <a href="{% url 'users:dashboard' %}" class="brand-link">
                 <img src="{% if logo %} {{ logo.logo.url }} {% else %} {% static 'images/logo.jpeg' %} {% endif %}" alt="Logo" class="brand-logo" style="max-height: 80px; width: 200px;">
-                <h5 class="brand-title">Rent Hub | Property Rent Management System</h5>
+                {% comment %} <h5 class="brand-title">Rent Hub | Property Rent Management System</h5> {% endcomment %}
             </a>
         </div>
         

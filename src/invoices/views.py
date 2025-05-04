@@ -19,6 +19,7 @@ from django.conf import settings
 from django.views.decorators.http import require_POST
 from users.views import get_system_logo
 import io
+from django.urls import reverse_lazy
 # Create your views here.
 
 def get_invoice_serial_number():
@@ -181,7 +182,12 @@ class InvoiceDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        invoice = self.get_object()
         context['logo'] = get_system_logo()
+        context['pdf_url'] = self.request.build_absolute_uri(
+            reverse_lazy('invoices:download_invoice', kwargs={'invoice_uuid': invoice.uuid})
+
+        )
         return context
 
 @method_decorator(login_required, name='dispatch')
@@ -232,4 +238,7 @@ def update_status(request, invoice_uuid):
         invoice.save()
     else:
         messages.error(request, "Invalid status.")
-    return redirect('invoices:manage_invoices')
+    if request.user.user_type == UserType.ADMIN:
+        return redirect('invoices:manage_invoices')
+    else:
+        return redirect('invoices:view_invoices')
