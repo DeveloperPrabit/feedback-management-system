@@ -264,15 +264,16 @@ class ProfileView(View):
 @method_decorator(login_required, name='dispatch')
 class UpdateProfileView(View):
 
+
     def get_template_names(self) -> list[str]:
         if self.request.user.user_type == UserType.ADMIN:
             return ['users/admin_profile_update.html']
         return ['users/update_profile.html']
-    
+
 
     def get(self, request):
         user = request.user
-        return render(request, self.get_template_names(), {'user': user})
+        return render(request, self.get_template_names(), {'user': user, 'logo': get_system_logo()})
     
 
     def post(self, request):
@@ -287,12 +288,7 @@ class UpdateProfileView(View):
             return redirect("users:dashboard")
         else:
             messages.error(request, "No profile picture uploaded.")
-            return render(request, self.get_template_names(), {'user': user})
-        
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['logo'] = get_system_logo()
-        return context
+            return render(request, self.get_template_names(), {'user': user, 'logo': get_system_logo()})
     
         
 
