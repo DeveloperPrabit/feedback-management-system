@@ -289,6 +289,12 @@ class UpdateProfileView(View):
             messages.error(request, "No profile picture uploaded.")
             return render(request, self.get_template_names(), {'user': user})
         
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['logo'] = get_system_logo()
+        return context
+    
+        
 
 @method_decorator(login_required, name='dispatch')
 class UserDeleteView(View):
