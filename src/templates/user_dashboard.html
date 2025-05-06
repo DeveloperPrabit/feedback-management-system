@@ -46,7 +46,7 @@
             </nav>
 
             <div class="settings-section">
-                <h4>Settings</h4>
+                {% comment %} <h4>Settings</h4> {% endcomment %}
                 <a href="{% url 'users:profile' %}" class="menu-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
                     <i class="fas fa-user"></i> View Profile
                 </a>

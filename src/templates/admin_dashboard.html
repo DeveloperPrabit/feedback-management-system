@@ -31,7 +31,7 @@
         <div class="brand-header">
             <a href="{% url 'users:dashboard' %}" class="brand-link">
                 <img src="{% if logo %} {{ logo.logo.url }} {% else %} {% static 'images/logo.jpeg' %} {% endif %}" alt="Logo" class="brand-logo" style="max-height: 80px; width: 200px;">
-                {% comment %} <h5 class="brand-title">Rent Hub | Property Rent Management System</h5> {% endcomment %}
+                <h5 class="brand-title">Admin Dashboard</h5>
             </a>
         </div>
         
@@ -72,7 +72,7 @@
                 <button class="sidebar-toggle" id="sidebarToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h4 class="page-title" id="pageTitle">Admin Dashboard</h4>
+                {% comment %} <h4 class="page-title" id="pageTitle">Admin Dashboard</h4> {% endcomment %}
             </div>
             
             <div class="navbar-right">
