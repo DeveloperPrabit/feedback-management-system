@@ -34,7 +34,7 @@ class TenantForm(forms.ModelForm):
             'flat_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Flat Number')}),
             'room_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Room Number')}),
             'rent_amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': _('Rent Amount')}),
-            'rent_start_date': forms.DateInput(attrs={'class': 'form-control', 'placeholder': _('Rent Start Date'), 'type': 'date'}),
+            'rent_start_date': forms.TextInput(attrs={'class': 'date-picker', 'id': 'nepaliDate', 'placeholder': _('Rent Start Date'), 'autocomplete': 'off'}),
         }
         error_messages = {
             'name': {

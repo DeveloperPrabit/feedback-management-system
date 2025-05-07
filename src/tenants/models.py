@@ -78,8 +78,10 @@ class Tenant(TimestampMixin):
         decimal_places=2,
     )
 
-    rent_start_date = models.DateField(
+    rent_start_date = models.CharField(
         _('rent start date'),
+        max_length=10,
+        help_text=_('Format: YYYY-MM-DD'),
         blank=True,
         null=True,
     )
