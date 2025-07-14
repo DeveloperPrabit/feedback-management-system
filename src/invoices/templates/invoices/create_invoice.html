@@ -34,12 +34,6 @@
         
         <!-- Section 1 -->
         <div class="section flex">
-            {% comment %} <div>
-                <label>सि.नं.: {{ form.serial_number }}</label>
-                {% if form.serial_number.errors %}
-                    <div class="text-danger">{{ form.serial_number.errors }}</div>
-                {% endif %}
-            </div> {% endcomment %}
             <div>
                 <label>बहाल महिना: {{ form.rent_month }}</label>
                 {% if form.rent_month.errors %}
@@ -48,7 +42,8 @@
             </div>
             <div>
                 <label>मिति:</label>
-                <input type="text" class="date-picker" id="nepaliDate" name="date" placeholder="YYYY-MM-DD" required>
+                <input type="text" class="date-picker" id="nepaliDate" name="nepali_date" placeholder="YYYY-MM-DD" required>
+                {{ form.date }}
                 {% if form.date.errors %}
                     <div class="text-danger">{{ form.date.errors }}</div>
                 {% endif %}
@@ -257,31 +252,57 @@
 <!-- this should go after your </body> -->
 <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://unpkg.com/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.css"
-crossorigin="anonymous" />
-
+<link rel="stylesheet" href="https://unpkg.com/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.css" crossorigin="anonymous" />
 <script src="https://cdn.jsdelivr.net/npm/nepali-date-converter@2.2.0/dist/nepali-date-converter.umd.js"></script>
 
 <script>
-    {% comment %} $('.date-picker').nepaliDatePicker({
-        dateFormat: '%D, %M %d, %y',
-        closeOnDateSelect: true,
-        minDate: 'सोम, जेठ १०, २०७३',
-        maxDate: 'मंगल, जेठ ३२, २०७३'
-      }); {% endcomment %}
+    $(document).ready(function() {
+        $('#nepaliDate').nepaliDatePicker({
+            dateFormat: '%y-%m-%d',
+            closeOnDateSelect: true
+        });
 
-     $('#nepaliDate').nepaliDatePicker({
-        dateFormat: '%y-%m-%d',
-        closeOnDateSelect: true
+        // Handle tenant dropdown change
+        $('#id_tenant').change(function() {
+            var tenantId = $(this).val();
+            if (tenantId) {
+                $.ajax({
+                    url: "{% url 'invoices:get_tenant_details' %}",
+                    type: 'GET',
+                    data: { tenant_id: tenantId },
+                    success: function(data) {
+                        if (data.error) {
+                            alert(data.error);
+                            return;
+                        }
+                        // Populate the fields
+                        $('#id_house_number').val(data.house_name);
+                        $('#id_flat_number').val(data.flat_number);
+                        $('#id_room_no').val(data.room_number);
+                        $('#id_building_name').val(data.house_name);
+                        $('#id_pan_or_vat_number').val(data.pan_or_vat_number);
+                        $('#id_rent_amount').val(data.rent_amount);
+                        $('#id_date').val(data.rent_start_date);
+                        $('#nepaliDate').val(data.rent_start_date);
+                        $(document).trigger('input'); // Trigger total calculation
+                    },
+                    error: function(xhr) {
+                        alert('Error fetching tenant details: ' + xhr.responseJSON.error);
+                    }
+                });
+            } else {
+                // Clear fields if no tenant is selected
+                $('#id_house_number').val('');
+                $('#id_flat_number').val('');
+                $('#id_room_no').val('');
+                $('#id_building_name').val('');
+                $('#id_pan_or_vat_number').val('');
+                $('#id_rent_amount').val('');
+                $('#id_date').val('');
+                $('#nepaliDate').val('');
+                $(document).trigger('input');
+            }
+        });
     });
-
-    {% comment %}
-    $('#nepaliDate').on('dateSelect', function (event) {
-        const nepaliDate = event.datePickerData.dateObject;
-        const engDate = NepaliFunctions.AD.fromBs(nepaliDate.bsYear, nepaliDate.bsMonth, nepaliDate.bsDate);
-        const formattedDate = `${engDate.year}-${String(engDate.month).padStart(2, '0')}-${String(engDate.date).padStart(2, '0')}`;
-        $('input[name="date"]').val(formattedDate); // set hidden input field used by Django
-    }); {% endcomment %}
 </script>
-
 {% endblock dashboard_content %}

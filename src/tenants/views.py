@@ -167,6 +167,7 @@ class TenantDetailsView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             return True
         return tenant.user == self.request.user
 
+
     
     def get_template_names(self):
         if self.request.user.user_type == UserType.ADMIN:

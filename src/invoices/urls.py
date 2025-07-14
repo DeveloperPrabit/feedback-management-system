@@ -10,4 +10,7 @@ urlpatterns = [
     path('delete-invoice/<uuid:invoice_uuid>/', views.DeleteInvoiceView.as_view(), name='delete_invoice'),
     path('invoice/<uuid:invoice_uuid>/download/', views.download_invoice_pdf, name='download_invoice'),
     path('update-status/<uuid:invoice_uuid>/', views.update_status, name='update_invoice_status'),
+    path('get-tenant-details/', views.get_tenant_details, name='get_tenant_details'),
+    # Removed:
+    # path('invoice/<uuid:invoice_uuid>/download-image/', views.download_invoice_image, name='download_invoice_image'),
 ]

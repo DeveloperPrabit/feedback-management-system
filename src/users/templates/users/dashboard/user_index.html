@@ -35,7 +35,8 @@
                     <h2>{{ invoices }}</h2>
                     <p>Total No. of Invoices</p>
                     <div class="icon">📄</div>
-                    <a href="{% url 'invoices:view_invoices' %}" class="small-box-footer">More info</a>
+                    <a href="{% url 'invoices:view_invoices' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+
                 </div>
             </div>
 
@@ -45,7 +46,10 @@
                     <h2>{{ paid_invoices }}</h2>
                     <p>Total No. of Paid Invoices</p>
                     <div class="icon">💰</div>
-                    <a href="#" class="small-box-footer">More info</a>
+                    <a href="{% url 'invoices:view_invoices' %}?status=paid" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+
                 </div>
             </div>
 
@@ -55,7 +59,9 @@
                     <h2>{{ unpaid_invoices }}</h2>
                     <p>Total No. of Unpaid Invoices</p>
                     <div class="icon">🚫</div>
-                    <a href="#" class="small-box-footer">More info</a>
+                    <a href="{% url 'invoices:view_invoices' %}?status=unpaid" class="small-box-footer">
+                      More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
                 </div>
             </div>
         </div>

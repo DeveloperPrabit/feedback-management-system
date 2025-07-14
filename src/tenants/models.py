@@ -4,9 +4,7 @@ from django.contrib.auth import get_user_model
 from rental_system.mixins import TimestampMixin
 from django.utils.translation import gettext_lazy as _
 
-
 User = get_user_model()
-# Create your models here.
 
 class Tenant(TimestampMixin):
     uuid = models.UUIDField(
@@ -86,6 +84,12 @@ class Tenant(TimestampMixin):
         null=True,
     )
 
+    pan_or_vat_number = models.CharField(
+        _('PAN or VAT Number'),
+        max_length=50,
+        blank=True,
+        null=True
+    )
+
     def __str__(self):
         return self.name
-    

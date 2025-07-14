@@ -6,152 +6,6 @@
 {% endblock css %}
 
 {% block dashboard_content %}
-{% comment %} <div class="container mt-4">
-    <!-- Page Title -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary mb-0">
-            <i class="fas fa-file-invoice me-2"></i>Invoice Details
-        </h2>
-        <a href="{% url 'invoices:view_invoices' %}" class="btn btn-secondary">Back to Invoice List</a>
-    </div>
-
-    <!-- Invoice Details -->
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">घर बहाल बिल  #{{ invoice.serial_number }}</h4>
-        </div>
-        <div class="card-body p-4">
-            <!-- Basic Invoice Information -->
-            <h5 class="text-primary">Invoice Information</h5>
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <p><strong>बहालको महिना  :</strong> {{ invoice.rent_month }}</p>
-                    <p><strong>मिति :</strong> {{ invoice.date|date:"M d, Y" }}</p>
-                    <p><strong>घर नं. :</strong> {{ invoice.house_number }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>फ्ल्याट नं. :</strong> {{ invoice.flat_number|default:"-" }}</p>
-                    <p><strong>कोठा, सटर, पसल, अन्य नं. :</strong> {{ invoice.room_no }}</p>
-                    <p><strong>घर, बिल्डिङ, अपार्टमेन्ट, बंगला नाम वा नम्बर :</strong> {{ invoice.building_name }}</p>
-                </div>
-            </div>
-
-            <!-- Tenant Details -->
-            <h5 class="text-primary">Tenant Information</h5>
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <p><strong>बहालवालाको नाम:</strong> {{ invoice.tenant.name }}</p>
-                    <p><strong>Email:</strong> <a href="mailto:{{ invoice.tenant.email }}" class="text-decoration-none">{{ invoice.tenant.email }}</a></p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Mobile:</strong> {{ invoice.tenant.mobile }}</p>
-                    <p><strong>Address:</strong> {{ invoice.tenant.address }}</p>
-                </div>
-            </div>
-
-            <!-- Fee Breakdown -->
-            <h5 class="text-primary">Fee Breakdown</h5>
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <p><strong>बहाल रकम:</strong> Rs {{ invoice.rent_amount }}</p>
-                    <p><strong>पार्किङ :</strong> Rs {{ invoice.parking_fee|default:"0.00" }}</p>
-                    <p><strong>बिजुली :</strong> Rs {{ invoice.electricity_fee|default:"0.00" }}</p>
-
-                </div>
-                <div class="col-md-6">
-                    <p><strong>पिउने पानी :</strong> Rs {{ invoice.drinking_water_fee|default:"0.00" }}</p>
-                    <p><strong>साधारण पानी :</strong> Rs {{ invoice.normal_water_fee|default:"0.00" }}</p>
-                    <p><strong>जेनेरेटर, पावर ब्याकप :</strong> Rs {{ invoice.generator_power_backup_fee|default:"0.00" }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>ईन्टरनेट, टेलिफोन, टिभी : </strong> Rs {{ invoice.internet_telephone_tv_fee|default:"0.00" }}</p>
-                    <p><strong>फोहोर सरसफाई :</strong> Rs {{ invoice.waste_fee|default:"0.00" }}</p>
-                    <p><strong>अन्य खर्च:</strong> Rs {{ invoice.other_fee|default:"0.00" }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>सुरक्षा गार्ड :</strong> Rs {{ invoice.security_fee|default:"0.00" }}</p>
-                </div>
-            </div>
-
-            <!-- Total Calculation -->
-            <h5 class="text-primary">Total Calculation</h5>
-            <div class="text-end mb-4">
-                <p><strong>जम्मा रकम :</strong> Rs {{ invoice.total_amount }}</p>
-                <p><strong>छुट रकम :</strong> Rs {{ invoice.discount|default:"0.00" }}</p>
-                <p><strong>बहाल कर :</strong> Rs {{ invoice.tax|default:"0.00" }}</p>
-                <p><strong>अगाडिको बाँकी रकम :</strong> Rs {{ invoice.previous_due|default:"0.00" }}</p>
-                <p><strong>कुल जम्मा रकम :</strong> Rs {{ invoice.grand_total }}</p>
-            </div>
-
-            <!-- Bank Details -->
-            <h5 class="text-primary">Bank Information</h5>
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <p><strong>कुल जम्मा रकम:</strong> {{ invoice.bank_name|default:"-" }}</p>
-                    <p><strong>खाता नम्बर :</strong> {{ invoice.account_number|default:"-" }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>खाता नाम :</strong> {{ invoice.account_name|default:"-" }}</p>
-                </div>
-            </div>
-
-            <!-- Signatures -->
-            <h5 class="text-primary">Signatures</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>बहाल धनि हस्ताक्षर :</strong> {{ invoice.owner_signature|default:"-" }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>बहाल वाला हस्ताक्षर:</strong> {{ invoice.tenant_signature|default:"-" }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer Section -->
-        <div class="card-footer bg-light text-end">
-            <a href="{% url 'invoices:download_invoice' invoice.uuid %}" class="btn btn-success me-2">
-                <i class="fas fa-download"></i> Download PDF
-            </a>
-            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#shareInvoiceModal">
-                <i class="fas fa-share-alt"></i> Share
-            </button>
-        </div>
-
-        <!-- Share Invoice Modal -->
-        <div class="modal fade" id="shareInvoiceModal" tabindex="-1" aria-labelledby="shareInvoiceModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title" id="shareInvoiceModalLabel">Share Invoice</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-        
-                <div class="modal-body text-center">
-                <p class="text-muted">Share this invoice via:</p>
-        
-                <!-- Social Share Buttons -->
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-primary m-1">
-                    <i class="fab fa-facebook-f"></i> Facebook
-                </a>
-        
-                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this invoice!" target="_blank" class="btn btn-outline-info m-1">
-                    <i class="fab fa-twitter"></i> Twitter
-                </a>
-        
-                <a href="https://api.whatsapp.com/send?text=Check out this invoice: {{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-success m-1">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </a>
-        
-                <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}&text=Check out this invoice" target="_blank" class="btn btn-outline-secondary m-1">
-                    <i class="fab fa-telegram-plane"></i> Telegram
-                </a>
-                </div>
-        
-            </div>
-            </div>
-        </div>
-    </div>
-</div> {% endcomment %}
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="{% url 'invoices:view_invoices' %}" class="btn btn-secondary">Back to Invoice List</a>
@@ -159,7 +13,7 @@
 
     <div class="invoice-box" style="background-color: #eaf6ff;">
         <div class="logo-row">
-            <img src="{% if logo %} {{ logo.logo.url }} {%else%} {% static 'images/logo.jpeg' %} {% endif %}" alt="Logo">
+            <img src="{% if logo %}{{ logo.logo.url }}{% else %}{% static 'images/logo.jpeg' %}{% endif %}" alt="Logo">
             <div class="heading">Rent Invoice</div>
         </div>
     
@@ -167,7 +21,7 @@
             <table>
                 <tr>
                     <td>सि. नं.</td>
-                    <td><div class="value-box">{{invoice.serial_number}}</div></td>
+                    <td><div class="value-box">{{ invoice.serial_number }}</div></td>
                     <td>भाडा महिना:</td>
                     <td><div class="value-box">{{ invoice.rent_month }}</div></td>
                     <td>मिति:</td>
@@ -280,18 +134,17 @@
         <div class="section signature-box" style="border-radius:15px; border:1px solid black; padding: 20px;">
             <div>
                 <label>बहाल धनि हस्ताक्षर:</label>
-                <div class="value-box">{{invoice.owner_signature}}</div>
+                <div class="value-box">{{ invoice.owner_signature }}</div>
             </div>
             <div>
                 <label>बहाल वाला हस्ताक्षर:</label>
-                <div class="value-box">{{invoice.tenant_signature}}</div>
+                <div class="value-box">{{ invoice.tenant_signature }}</div>
             </div>
         </div>
     
         <div class="section note">
             <p>नोट: प्रत्येक महिनाको ५ गतेभित्र बहाल बुझाउनु पर्नेछ, अन्यथा १०% जरिवाना लाग्नेछ।</p>
         </div>
-        <!-- Footer Section -->
         <div class="card-footer bg-light text-end">
             <a href="{% url 'invoices:download_invoice' invoice.uuid %}" class="btn btn-success me-2">
                 <i class="fas fa-download"></i> Download PDF
@@ -301,37 +154,32 @@
             </button>
         </div>
     
-        <!-- Share Invoice Modal -->
         <div class="modal fade" id="shareInvoiceModal" tabindex="-1" aria-labelledby="shareInvoiceModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title" id="shareInvoiceModalLabel">Share Invoice</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="shareInvoiceModalLabel">Share Invoice</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="text-muted">Share this invoice via:</p>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ pdf_url }}" target="_blank" class="btn btn-outline-primary m-1">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ pdf_url }}&text=Check out this invoice!" target="_blank" class="btn btn-outline-info m-1">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a href="https://api.whatsapp.com/send?text=Check out this invoice: {{ pdf_url }}" target="_blank" class="btn btn-outline-success m-1">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=&su=Rent%20Invoice&body=Please%20check%20this%20rent%20invoice:%20{{ pdf_url|urlencode }}" target="_blank" class="btn btn-outline-danger m-1">
+                            <i class="fas fa-envelope"></i> Gmail
+                        </a>
+                        <a href="https://t.me/share/url?url={{ pdf_url }}&text=Check out this invoice" target="_blank" class="btn btn-outline-secondary m-1">
+                            <i class="fab fa-telegram-plane"></i> Telegram
+                        </a>
+                    </div>
                 </div>
-        
-                <div class="modal-body text-center">
-                <p class="text-muted">Share this invoice via:</p>
-        
-                <!-- Social Share Buttons -->
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ pdf_url }}" target="_blank" class="btn btn-outline-primary m-1">
-                    <i class="fab fa-facebook-f"></i> Facebook
-                </a>
-        
-                <a href="https://twitter.com/intent/tweet?url={{ pdf_url }}&text=Check out this invoice!" target="_blank" class="btn btn-outline-info m-1">
-                    <i class="fab fa-twitter"></i> Twitter
-                </a>
-        
-                <a href="https://api.whatsapp.com/send?text=Check out this invoice: {{ pdf_url }}" target="_blank" class="btn btn-outline-success m-1">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </a>
-        
-                <a href="https://t.me/share/url?url={{ pdf_url }}&text=Check out this invoice" target="_blank" class="btn btn-outline-secondary m-1">
-                    <i class="fab fa-telegram-plane"></i> Telegram
-                </a>
-                </div>
-        
-            </div>
             </div>
         </div>
     </div>

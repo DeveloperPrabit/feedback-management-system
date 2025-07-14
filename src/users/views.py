@@ -176,8 +176,9 @@ class DashboardView(View):
             users = User.objects.all().count()
             tenants = Tenant.objects.all().count()
             invoices = Invoice.objects.all().count()
-            paid_invoices = Invoice.objects.filter(status='Paid').count()
-            unpaid_invoices = Invoice.objects.filter(status='Unpaid').count()
+            paid_invoices = Invoice.objects.filter(status__iexact='paid').count()
+            unpaid_invoices = Invoice.objects.filter(status__iexact='unpaid').count()
+
             context = {
                 'users': users,
                 'tenants': tenants,
@@ -191,15 +192,14 @@ class DashboardView(View):
             context = {
                 'tenants': Tenant.objects.filter(user=request.user).count(),
                 'invoices': Invoice.objects.filter(tenant__user=request.user).count(),
-                'paid_invoices': Invoice.objects.filter(tenant__user=request.user, status='Paid').count(),
-                'unpaid_invoices': Invoice.objects.filter(tenant__user=request.user, status='Unpaid').count(),
+                'paid_invoices': Invoice.objects.filter(tenant__user=request.user, status__iexact='paid').count(),
+                'unpaid_invoices': Invoice.objects.filter(tenant__user=request.user, status__iexact='unpaid').count(),
                 'logo': get_system_logo(),
             }
             return render(request, 'users/dashboard/user_index.html', context)
     
     def post(self, request):
         pass
-
 
 class ViewUsersView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = User

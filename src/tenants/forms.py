@@ -3,7 +3,6 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
-from django.utils import timezone
 import os
 
 class TenantForm(forms.ModelForm):
@@ -20,7 +19,8 @@ class TenantForm(forms.ModelForm):
             'room_number',
             'rent_amount',
             'rent_start_date',
-            'photo', 
+            'photo',
+            'pan_or_vat_number',
         ]
 
         widgets = {
@@ -35,6 +35,7 @@ class TenantForm(forms.ModelForm):
             'room_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Room Number')}),
             'rent_amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': _('Rent Amount')}),
             'rent_start_date': forms.TextInput(attrs={'class': 'date-picker', 'id': 'nepaliDate', 'placeholder': _('Rent Start Date'), 'autocomplete': 'off'}),
+            'pan_or_vat_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('PAN or VAT Number')}),
         }
         error_messages = {
             'name': {
@@ -64,15 +65,8 @@ class TenantForm(forms.ModelForm):
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')
         if photo:
-            # Get the file extension
             ext = os.path.splitext(photo.name)[1].lower()
-            # Allowed file extensions
             allowed_extensions = ['.png', '.jpg', '.jpeg', '.pdf']
             if ext not in allowed_extensions:
                 raise ValidationError(_("Only files with extensions PNG, JPG, JPEG, or PDF are allowed."))
         return photo
-
-
-    
-
-    

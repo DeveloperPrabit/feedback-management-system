@@ -1,162 +1,4 @@
 {% load static %}
-{% comment %} <!DOCTYPE html>
-<html lang="ne">
-<head>
-    <meta charset="UTF-8">
-    <title>Invoice</title>
-    <style>
-        @font-face {
-            font-family: 'NotoSansDevanagari';
-            src: url('file:///home2/techprog/rental_system/src/static/fonts/NotoSansDevanagari-Regular.ttf') format('truetype');
-        }        
-        @page {
-            size: A4;
-            margin: 1cm;
-        }
-        body {
-            font-family: 'NotoSansDevanagari', sans-serif, serif, monospace, cursive, fantasy;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-        .container {
-            width: 100%;
-            padding: 0;
-            margin: 0 auto;
-        }
-        h2 {
-            text-align: center;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        .section {
-            border: 1px solid #000;
-            padding: 5px 10px;
-            margin-bottom: 6px;
-        }
-        .title {
-            font-weight: bold;
-            text-decoration: underline;
-            margin-bottom: 5px;
-        }
-        .row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-        .col {
-            width: 48%;
-        }
-        .col label {
-            font-weight: bold;
-        }
-        .note {
-            font-style: italic;
-            font-size: 11px;
-            color: #555;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-
-    <h2>भाडा रसिद / Rent Invoice</h2>
-
-    <div class="section">
-        <div class="row">
-            <div class="col"><label>सि.नं:</label> {{invoice.invoice_number}} </div>
-            <div class="col"><label>भाडा महिना:</label> {{ invoice.rent_month }}</div>
-            <div class="col"><label>मिति:</label> {{ invoice.date }}</div>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="row">
-            <div class="col"><label>बहालवालाको नाम:</label> {{ invoice.tenant.name }}</div>
-        </div>
-        <div class="title">बहालको विवरण</div>
-        <div class="row">
-            <div class="col"><label>घर नं.:</label> {{ invoice.house_number }}</div>
-            <div class="col"><label>फ्ल्याट नं.:</label> {{ invoice.flat_number }}</div>
-            <div class="col"><label>कोठा, सटर, पसल, अन्य नं.:</label> {{ invoice.room_no }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>घर, बिल्डिङ, अपार्टमेन्ट, बंगला नाम वा नम्बर :</label> {{ invoice.building_name }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>प्यान / भ्याट नं.:</label> {{ invoice.pan_or_vat_number }}</div>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="title">शुल्क विवरण</div>
-        <div class="row">
-            <div class="col"><label>बहाल रकम:</label> {{ invoice.rent_amount }}</div>
-            <div class="col"><label>पार्किङ:</label> {{ invoice.parking_fee }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>बिजुली:</label> {{ invoice.electricity_fee }}</div>
-            <div class="col"><label>सुरक्षा गार्ड:</label> {{ invoice.security_fee }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>पिउने पानी:</label> {{ invoice.drinking_water_fee }}</div>
-            <div class="col"><label>जेनेरेटर, पावर ब्याकप:</label> {{ invoice.generator_power_backup_fee }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>साधारण पानी:</label> {{ invoice.normal_water_fee }}</div>
-            <div class="col"><label>ईन्टरनेट, टेलिफोन, टिभी:</label> {{ invoice.internet_telephone_tv_fee }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>फोहोर सरसफाई:</label> {{ invoice.waste_fee }}</div>
-            <div class="col"><label>अन्य खर्च:</label> {{ invoice.other_fee }}</div>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="title">जम्मा हिसाबको बिवरण</div>
-        <div class="row">
-            <div class="col"><label>छुट रकम:</label> {{ invoice.discount }}</div>
-            <div class="col"><label>जम्मा रकम:</label> {{ invoice.total_amount }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>बहाल कर:</label> {{ invoice.tax }}</div>
-            <div class="col"><label>कूल जम्मा रकम:</label> {{ invoice.grand_total }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>अगाडिको बाँकी रकम:</label> {{ invoice.previous_due }}</div>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="title">बैंक विवरण</div>
-        <div class="row">
-            <div class="col"><label>बैंक नाम:</label> {{ invoice.bank_name }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>खाता नम्बर:</label> {{ invoice.account_number }}</div>
-        </div>
-        <div class="row">
-            <div class="col"><label>खाता नाम:</label> {{ invoice.account_name }}</div>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="row">
-            <div class="col"><label>बहाल धनि हस्ताक्षर:</label> {{ invoice.owner_signature }}</div>
-            <div class="col"><label>बहाल वाला हस्ताक्षर:</label> {{ invoice.tenant_signature }}</div>
-        </div>
-    </div>
-
-    <div class="section note">
-        <p>नोट: प्रत्येक महिनाको ५ गतेभित्र बहाल बुझाउनु पर्नेछ, अन्यथा १०% जरिवाना लाग्नेछ।</p>
-    </div>
-
-</div>
-
-</body>
-</html> {% endcomment %}
-
-
 <!DOCTYPE html>
 <html lang="ne">
 <head>
@@ -164,17 +6,18 @@
     <style>
         @font-face {
             font-family: 'NotoSansDevanagari';
-            src: url('file:///home2/techprog/rental_system/src/static/fonts/NotoSansDevanagari-Regular.ttf') format('truetype');
-        }    
+            src: url('{% static "fonts/NotoSansDevanagari-Regular.ttf" %}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
 
         body {
-            font-family:'NotoSansDevanagari', sans-serif;
+            font-family: 'NotoSansDevanagari', sans-serif;
             font-size: 14px;
             margin: 0 auto;
             padding: 10mm;
             background-color: #eaf6ff;
         }
-
 
         .invoice-box {
             width: 100%;
@@ -255,7 +98,7 @@
 <body>
     <div class="invoice-box">
         <div class="logo-row">
-            <img src="{% if logo %} {{ logo.logo.url }} {%else%} {% static 'images/logo.jpeg' %} {% endif %}" alt="Logo">
+            <img src="{% if logo %}{{ logo.logo.url }}{% else %}{% static 'images/logo.jpeg' %}{% endif %}" alt="Logo">
             <div class="heading">Rent Invoice</div>
         </div>
 
@@ -263,7 +106,7 @@
             <table>
                 <tr>
                     <td>सि. नं.</td>
-                    <td><div class="value-box">{{invoice.serial_number}}</div></td>
+                    <td><div class="value-box">{{ invoice.serial_number }}</div></td>
                     <td>भाडा महिना:</td>
                     <td><div class="value-box">{{ invoice.rent_month }}</div></td>
                     <td>मिति:</td>
@@ -293,7 +136,7 @@
                     <td colspan="6">घर, बिल्डिङ, अपार्टमेन्ट, बंगला नाम वा नम्बर :<div class="value-box">{{ invoice.building_name }}</div></td>
                 </tr>
                 <tr>
-                    <td colspan="6">प्यान / भ्याट नं.:<div class="value-box">{{ invoice.pan_or_vat_number }}</div></td>
+                    <td colspan="6">प्यान / भ्याट नं.:<div class="value-box">{% if invoice.pan_or_vat_number %}{{ invoice.pan_or_vat_number }}{% endif %}</div></td>
                 </tr>
             </table>
         </div>
@@ -387,10 +230,9 @@
         <div class="section note">
             <p>नोट: प्रत्येक महिनाको ५ गतेभित्र बहाल बुझाउनु पर्नेछ, अन्यथा १०% जरिवाना लाग्नेछ।</p>
         </div>
-    </div>
-    <!-- generated date -->
-    <div style="text-align: center; font-size: 10px; margin-top: 20px;">
-        <p>Invoice generated on: {{ generated_date }}</p>
+        <div style="text-align: center; font-size: 10px; margin-top: 20px;">
+            <p>Invoice generated on: {{ generated_date }}</p>
+        </div>
     </div>
 </body>
 </html>
