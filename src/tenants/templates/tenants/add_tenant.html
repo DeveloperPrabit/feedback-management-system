@@ -43,4 +43,12 @@
         closeOnDateSelect: true
     });
 </script>
+{% if redirect_after %}
+<script>
+  setTimeout(function() {
+    window.location.href = "{% url 'tenants:view_tenants' %}";
+  }, 1000);
+</script>
+{% endif %}
+
 {% endblock dashboard_content %}

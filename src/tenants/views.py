@@ -105,7 +105,7 @@ class DeleteTenantView(View):
         tenant.delete()
         messages.success(request, "Tenant deleted successfully.")
         return redirect('tenants:manage_tenants')
-
+#add tenant view
 @method_decorator(login_required, name='dispatch')
 class AddTenant(View):
 
@@ -115,7 +115,7 @@ class AddTenant(View):
             return render(request, 'tenants/add_tenant.html', {'form': form})
         else:
             return render(request, 'tenants/add_user_tanant.html', {'form': form})
-    
+
     def post(self, request):
         form = TenantForm(request.POST, request.FILES)
         if form.is_valid():
@@ -123,18 +123,19 @@ class AddTenant(View):
             tenant.user = request.user
             tenant.save()
             messages.success(request, "Tenant added successfully")
-            if request.user.user_type != UserType.ADMIN:
-                return redirect('users:dashboard')
-            return redirect('tenants:manage_tenants')
-        else:
+            # Render form page again (not redirect)
             if request.user.user_type == UserType.ADMIN:
-                messages.error(request, "Failed to add tenant. Please check the form.")
-                messages.error(request, form.errors)
+                return render(request, 'tenants/add_tenant.html', {'form': TenantForm(), 'redirect_after': True})
+            else:
+                return render(request, 'tenants/add_user_tanant.html', {'form': TenantForm(), 'redirect_after': True})
+        else:
+            messages.error(request, "Failed to add tenant. Please check the form.")
+            messages.error(request, form.errors)
+            if request.user.user_type == UserType.ADMIN:
                 return render(request, 'tenants/add_tenant.html', {'form': form})
             else:
-                messages.error(request, "Failed to add tenant. Please check the form.")
-                messages.error(request, form.errors)
                 return render(request, 'tenants/add_user_tanant.html', {'form': form})
+
     
 @method_decorator(login_required, name='dispatch')
 class TenantUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

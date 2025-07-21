@@ -1,0 +1,39 @@
+{% extends "user_dashboard.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/feedback_detail.css' %}">
+{% endblock css %}
+
+{% block dashboard_content %}
+<div class="feedback-container">
+    <h2>Feedback Details</h2>
+    <p><strong>Serial Number:</strong> {{ feedback.serial_number }}</p>
+    <p><strong>Date:</strong> {{ feedback.feedback_date }}</p>
+    {% if not feedback.anonymous %}
+        <p><strong>Name:</strong> {{ feedback.name|default:"N/A" }}</p>
+        <p><strong>Address:</strong> {{ feedback.address|default:"N/A" }}</p>
+        <p><strong>Mobile:</strong> {{ feedback.mobile|default:"N/A" }}</p>
+        <p><strong>Email:</strong> {{ feedback.email|default:"N/A" }}</p>
+    {% else %}
+        <p><strong>Name:</strong> Anonymous</p>
+    {% endif %}
+    <p><strong>Rating:</strong> {{ feedback.get_rating_display }}</p>
+    <p><strong>Feedback:</strong> {{ feedback.feedback_text }}</p>
+    {% if feedback.attachment %}
+        <p><strong>Attachment:</strong> <a href="{{ feedback.attachment.url }}" target="_blank">View Attachment</a></p>
+    {% endif %}
+    <p><strong>Status:</strong> {{ feedback.get_status_display }}</p>
+    <p><strong>PDF:</strong> <a href="{{ pdf_url }}">Download PDF</a></p>
+
+    <form method="POST" action="{% url 'invoices:update_feedback_status' feedback.uuid %}">
+        {% csrf_token %}
+        <select name="status">
+            <option value="pending" {% if feedback.status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="reviewed" {% if feedback.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+            <option value="closed" {% if feedback.status == 'closed' %}selected{% endif %}>Closed</option>
+        </select>
+        <button type="submit">Update Status</button>
+    </form>
+</div>
+{% endblock dashboard_content %}

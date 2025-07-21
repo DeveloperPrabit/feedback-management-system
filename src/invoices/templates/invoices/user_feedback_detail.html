@@ -1,0 +1,40 @@
+{% extends "user_dashboard.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/user_feedback_detail.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% endblock css %}
+
+{% block dashboard_content %}
+<div class="feedback-container">
+    <header>
+        <img src="{% if logo and logo.logo %}{{ logo.logo.url }}{% else %}{% static 'images/logo.jpeg' %}{% endif %}" alt="Office Logo" class="logo" onerror="this.src='{% static 'images/my.jpg' %}'">
+        <h1 class="invoice-title">{{ request.user.full_name|default:"Your Office" }}</h1>
+    </header>
+
+    <h2 class="section-title text-center mb-3">Feedback Details</h2>
+
+    <div class="feedback-details">
+        <div class="section">
+            <p><strong>Serial Number:</strong> {{ feedback.serial_number }}</p>
+            <p><strong>Date:</strong> {{ feedback.feedback_date }}</p>
+            {% if not feedback.anonymous %}
+                <p><strong>Name:</strong> {{ feedback.name|default:"N/A" }}</p>
+                <p><strong>Address:</strong> {{ feedback.address|default:"N/A" }}</p>
+                <p><strong>Mobile:</strong> {{ feedback.mobile|default:"N/A" }}</p>
+                <p><strong>Email:</strong> {{ feedback.email|default:"N/A" }}</p>
+            {% else %}
+                <p><strong>Name:</strong> Anonymous</p>
+            {% endif %}
+            <p><strong>Rating:</strong> {{ feedback.rating }}</p> <!-- Updated to use raw rating value -->
+            <p><strong>Feedback:</strong> {{ feedback.feedback_text }}</p>
+            {% if feedback.attachment %}
+                <p><strong>Attachment:</strong> <a href="{{ feedback.attachment.url }}" target="_blank">View Attachment</a></p>
+            {% endif %}
+            <p><strong>Status:</strong> {{ feedback.status }}</p> <!-- Updated to use raw status value -->
+            <p><strong>PDF:</strong> <a href="{{ pdf_url }}" class="btn btn-secondary">Download PDF</a></p>
+        </div>
+    </div>
+</div>
+{% endblock dashboard_content %}

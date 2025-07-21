@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: 'NotoSansDevanagari';
+            src: url('https://fonts.gstatic.com/s/notosansdevanagari/v28/TuGfUUFzXI5FBtUyc7k8yVLSAY6c2CwLq6M-5ZDcY8fGzvO.svg#NotoSansDevanagari') format('svg');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body {
+            font-family: 'NotoSansDevanagari', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .invoice-container {
+            width: 50%;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #7979f8;
+            box-shadow: 0 4px 8px rgba(122, 103, 103, 0.1);
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            height: 50px;
+        }
+        .invoice-title {
+            font-size: 25px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(45deg, #28a745, #218838);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(88, 87, 87, 0.2);
+        }
+        h2.section-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table th, table td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #d6cdcd;
+            color: hwb(237 50% 13%);
+        }
+        table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .note {
+            font-size: 16px;
+            color: #011e9c;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <header>
+            <img src="data:image/jpeg;base64,{{ logo_base64 }}" alt="Office Logo" class="logo">
+            <h1 class="invoice-title">{{ office_name }}</h1>
+        </header>
+
+        <h2 class="section-title">सुझाव / गुनासो / प्रतिक्रिया विवरण</h2>
+
+        <table>
+            <tr>
+                <th>Serial Number</th>
+                <td>{{ feedback.serial_number }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ feedback.feedback_date }}</td>
+            </tr>
+            {% if not feedback.anonymous %}
+                <tr>
+                    <th>Name</th>
+                    <td>{{ feedback.name|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <th>Address</th>
+                    <td>{{ feedback.address|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <th>Mobile</th>
+                    <td>{{ feedback.mobile|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ feedback.email|default:"N/A" }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <th>Name</th>
+                    <td>Anonymous</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <th>Rating</th>
+                <td>{{ feedback.get_rating_display }}</td>
+            </tr>
+            <tr>
+                <th>Feedback</th>
+                <td>{{ feedback.feedback_text }}</td>
+            </tr>
+            {% if feedback.attachment %}
+                <tr>
+                    <th>Attachment</th>
+                    <td>Included (view in system)</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <th>Status</th>
+                <td>{{ feedback.get_status_display }}</td>
+            </tr>
+            <tr>
+                <th>Generated</th>
+                <td>{{ generated_date }}</td>
+            </tr>
+        </table>
+
+        <p class="note">तपाईको अमुल्य सुझावको लागि धन्यबाद । सुझावको बिवरण जाच्छ गरी आवश्यक प्रकृयामा जानेछौ ।</p>
+    </div>
+</body>
+</html>

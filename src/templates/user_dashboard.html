@@ -2,39 +2,65 @@
 {% load static %}
 <html lang="en">
 <head>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.jpg' %}">
-        <title>Bhada Hub | Property Rent Management System | Nepal</title>
-        <link rel="stylesheet" href="{% static 'css/user_dashboard.css' %}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >
-        <link rel="stylesheet" href="{% static 'css/bootstrap-grid.min.css' %}">
-        
-    
-        {% block css %}{% endblock css %}
-    </head>
-    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.jpg' %}">
+    <title>Bhada Hub | Property Rent Management System | Nepal</title>
+    <link rel="stylesheet" href="{% static 'css/user_dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-grid.min.css' %}">
+    {% block css %}
+    <style>
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card h4 {
+            font-size: 18px;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #7979f8;
+            margin: 0;
+        }
+        .reviewed-feedback {
+            position: absolute;
+            top: 10px;
+            right: -60px;
+            background: #7979f8;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+    {% endblock css %}
 </head>
-<body >
+<body>
     <div class="dashboard-container">
         <div class="sidebar">
             <div class="user-info">
                 <div class="conta">
-                    {% comment %} <h3 style="text-decoration: underline; height: 10vh;">Dashboard</h3> {% endcomment %}
                 </div>
                 <div class="profile-picture-wrapper" style="position: relative; display: inline-block;">
                     {% if request.user.profile_picture %}
                         <img src="{{ request.user.profile_picture.url }}" alt="Profile Photo" class="profile-photo">
                     {% else %}
-                        <img src="{% static 'images/my.jpg' %}" alt="Default Profile" class="profile-photo">
+                        <img src="{% if logo and logo.logo %}{{ logo.logo.url }}{% else %}{% static 'images/my.jpg' %}{% endif %}" alt="Default Profile" class="profile-photo" onerror="this.src='{% static 'images/my.jpg' %}'">
                     {% endif %}
-
-                    <!-- Link to the profile picture update page -->
+                    <span class="reviewed-feedback">{{ reviewed_feedbacks }}</span>
                     <a href="{% url 'users:profile_edit' %}"
-                    class="position-absolute bottom-0 end-0 bg-white text-primary border border-primary rounded-circle p-2 shadow"
-                    title="Edit Profile Picture">
+                       class="position-absolute bottom-0 end-0 bg-white text-primary border border-primary rounded-circle p-2 shadow"
+                       title="Edit Profile Picture">
                         <i class="fas fa-edit"></i>
                     </a>
                 </div>
@@ -46,27 +72,17 @@
             </nav>
 
             <div class="settings-section">
-                {% comment %} <h4>Settings</h4> {% endcomment %}
                 <a href="{% url 'users:profile' %}" class="menu-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
                     <i class="fas fa-user"></i> View Profile
                 </a>
                 <a href="{% url 'users:change_password' %}" class="menu-item {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
                     <i class="fas fa-lock"></i> Change Password
                 </a>
-                {% comment %} <a href="{% url 'users:profile_edit' %}" class="menu-item {% if request.resolver_match.url_name == 'profile_edit' %}active{% endif %}">
-                    <i class="fas fa-camera"></i> Change Profile Photo
-                </a> {% endcomment %}
-                <a href="{% url 'tenants:add_tenant' %}" class="menu-item {% if request.resolver_match.url_name == 'add_tenant' %}active{% endif %}">
-                    <i class="fas fa-user"></i>  Add Tenant
+                <a href="{% url 'invoices:create_feedback' %}" class="menu-item {% if request.resolver_match.url_name == 'create_feedback' %}active{% endif %}">
+                    <i class="fas fa-plus-circle"></i> Add Feedback
                 </a>
-                <a href="{% url 'tenants:view_tenants' %}" class="menu-item {% if request.resolver_match.url_name == 'view_tenants' %}active{% endif %}">
-                    <i class="fas fa-house-user"></i> View Tenants
-                </a>
-                <a href="{% url 'invoices:create_invoice' %}" class="menu-item {% if request.resolver_match.url_name == 'create_invoice' %}active{% endif %}">
-                    <i class="fas fa-plus-circle"></i> Add Invoice
-                </a>
-                <a href="{% url 'invoices:view_invoices' %}" class="menu-item {% if request.resolver_match.url_name == 'view_invoices' %}active{% endif %}">
-                    <i class="fas fa-file-invoice"></i>View List
+                <a href="{% url 'invoices:view_feedbacks' %}" class="menu-item {% if request.resolver_match.url_name == 'view_feedbacks' %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i> View Feedback List
                 </a>
                 <a href="{% url 'users:contact' %}" class="menu-item {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">
                     <i class="fas fa-address-book"></i> Contact
@@ -78,12 +94,10 @@
         {% endblock dashboard_content %}
     </div>
 
-    <!-- Footer -->
     <footer class="text-center py-3 border-top">
-        <small class="text-muted">&copy; 2025 <strong>Bhada Hub</strong> | All Rights Reserved.</small>
+        <small class="text-muted">© 2025 <strong>Bhada Hub</strong> | All Rights Reserved.</small>
     </footer>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     {% include "snippet/scripts.html" %}
-
 </body>
 </html>

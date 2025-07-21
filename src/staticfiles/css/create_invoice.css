@@ -4,34 +4,41 @@ body {
     padding: 0;
     background-color: #f4f4f4;
 }
+
 .form {
     width: 100%;
     max-width: 650px;
     margin: 20px auto;
     padding: 15px;
-    background: linear-gradient(hwb(0 89% 9%));
+    background: linear-gradient(to bottom, #f9f9f9, #e0e0e0);
     border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(128, 108, 108, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .invoice-container {
     width: 50%;
     margin: 20px auto;
     padding: 20px;
     border-radius: 8px;
     background-color: #fff;
-    color: #7979f8;
-    box-shadow: 0 4px 8px rgba(122, 103, 103, 0.1);
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 header {
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     gap: 30px;
+    margin-bottom: 20px;
 }
+
 .logo {
     height: 50px;
+    width: auto;
 }
+
 .invoice-title {
     font-size: 25px;
     font-weight: bold;
@@ -39,49 +46,80 @@ header {
     background: linear-gradient(45deg, #28a745, #218838);
     padding: 10px 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(88, 87, 87, 0.2);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
+
 .section {
     margin-bottom: 15px;
 }
+
 .section-title {
     font-size: 19px;
     font-weight: bold;
     margin-bottom: 5px;
+    color: #333;
 }
+
 .section label {
     display: block;
     margin-bottom: 4px;
     font-weight: 600;
     font-size: 14px;
-    color: hwb(237 50% 13%);
+    color: #1a237e;
 }
-.section input {
+
+.section input,
+.section textarea,
+.section select {
     width: 100%;
     padding: 7px;
-    border: 1px solid #d6cdcd;
+    border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
 }
+
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 5px;
+}
+
+.radio-option label {
+    margin: 0;
+    color: #1a237e;
+}
+
 .grid-two {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-}
-#previous-due {
-    grid-column: span 2; /* Makes the div span across both columns */
-    padding: 10px;
+    gap: 15px;
+    align-items: center;
 }
 
 .flex {
     display: flex;
     justify-content: space-between;
     gap: 25px;
+    align-items: center;
 }
+
 .note {
     font-size: 16px;
     color: #011e9c;
     margin-bottom: 20px;
+    text-align: center;
 }
+
 .submit-btn {
     display: inline-block;
     padding: 10px 20px;
@@ -91,16 +129,21 @@ header {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s ease;
 }
+
 .submit-btn:hover {
     background-color: #45a049;
 }
+
 .alert {
     padding: 10px;
     margin: 15px 0;
     border-radius: 5px;
     background-color: #f8d7da;
     color: #721c24;
+    position: relative;
+    animation: fadeOut 5s forwards;
 }
 
 .alert-success {
@@ -112,35 +155,28 @@ header {
     background-color: #f8d7da;
     color: #721c24;
 }
-.alert {
-    padding: 10px;
-    background-color: #f44336; 
-    color: white;
-    margin-bottom: 15px;
-    border-radius: 4px;
-}
-.alert-success {
-    background-color: #4CAF50; /
-}
+
 .alert-info {
     background-color: #2196F3;
+    color: white;
 }
 
 .message-container {
-    position:relative;
-    bottom:auto 10px; 
-    left: 50%; 
-    transform: translateX(-50%); 
+    position: relative;
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 1000;
-    width: auto; 
-    max-width: 80%; 
+    width: auto;
+    max-width: 80%;
+    margin: 10px 0;
 }
 
 .message-container .alert {
-    margin-bottom: 10px; 
-    padding: 10px; 
-    border-radius: 5px; 
-    font-size: 16px; 
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
 }
@@ -155,19 +191,8 @@ header {
     color: #721c24;
 }
 
-.message-container .alert {
-    animation: fadeOut 5s forwards;
-}
-
 @keyframes fadeOut {
-    0% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-        display: none;
-    }
+    0% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
 }

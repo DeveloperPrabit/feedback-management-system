@@ -1,0 +1,20 @@
+{% extends "user_dashboard.html" %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="content-wrapper">
+    <h2>Admin Profile</h2>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Name:</strong> {{ user.full_name|default:"N/A" }}</p>
+            <p><strong>Address:</strong> {{ user.full_address|default:"N/A" }}</p>
+            <p><strong>Mobile:</strong> {{ user.mobile|default:"N/A" }}</p>
+            {% if user.profile_picture %}
+                <p><strong>Profile Picture:</strong> <img src="{{ user.profile_picture.url }}" alt="Profile" style="max-width: 100px;"></p>
+            {% endif %}
+            <a href="{% url 'users:profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock dashboard_content %}
