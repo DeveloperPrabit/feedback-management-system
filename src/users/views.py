@@ -4,13 +4,13 @@ from django.views import View
 from django.views.generic import UpdateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.db import transaction
 import requests
 from .forms import (
@@ -31,14 +31,32 @@ def get_system_logo():
         logo = None
     return logo
 
+class ToggleUserActiveView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.user_type == UserType.ADMIN
+
+    def post(self, request, user_uuid):
+        user = User.objects.get(uuid=user_uuid)
+        if user == request.user:
+            messages.error(request, "You cannot deactivate your own account.")
+            return redirect('users:manage_users')
+
+        user.is_active = not user.is_active
+        user.save()
+        action = "deactivated" if not user.is_active else "activated"
+        messages.success(request, f"User {user.email} has been {action} successfully.")
+        return redirect('users:manage_users')
+
 class UserRegisterView(View):
     template_name = 'users/register.html'
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect("users:dashboard")
         logo = get_system_logo()
+        contact = Contact.objects.first()
         context = {
             'logo': logo,
+            'contact': contact,
         }
         return render(request, self.template_name, context)
     
@@ -69,10 +87,12 @@ class UserRegisterView(View):
                 "full_name": full_name,
                 "full_address": full_address,
                 "mobile": mobile,
+                'logo': get_system_logo(),
+                'contact': Contact.objects.first(),
             })
         
         recaptcha_response = request.POST.get("g-recaptcha-response")
-        recaptcha_secret = "6LfswtgZAAAAABX9gbLqe-d97qE2g1JP8oUYritJ"
+        recaptcha_secret = "6LfVFpUrAAAAAEYafcFU0DAmxaGrKIjaDmXG1_yP"
         recaptcha_verify_url = "https://www.google.com/recaptcha/api/siteverify"
         recaptcha_data = {"secret": recaptcha_secret, "response": recaptcha_response}
         recaptcha_result = requests.post(recaptcha_verify_url, data=recaptcha_data).json()
@@ -95,7 +115,8 @@ class UserLoginView(View):
             return redirect("users:dashboard")
         form = UserLoginForm()
         logo = get_system_logo()
-        return render(request, 'users/login.html', {'form': form, 'logo': logo})
+        contact = Contact.objects.first()
+        return render(request, 'users/login.html', {'form': form, 'logo': logo, 'contact': contact})
     
     def post(self, request):
         form = UserLoginForm(request, data=request.POST)
@@ -103,16 +124,19 @@ class UserLoginView(View):
             email = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=email, password=password)
-            if user is not None:
+            if user is not None and user.is_active:
                 login(request, user)
                 return redirect("users:dashboard")
+            elif user is not None and not user.is_active:
+                messages.error(request, "Your account has been deactivated. Please contact the administrator.")
             else:
                 messages.error(request, "Invalid email or password.")
         else:
             messages.error(request, "Invalid form submission.")
         
         logo = get_system_logo()
-        return render(request, 'users/login.html', {'form': form, 'logo': logo})
+        contact = Contact.objects.first()
+        return render(request, 'users/login.html', {'form': form, 'logo': logo, 'contact': contact})
 
 class UserLogoutView(View):
     def get(self, request):
@@ -129,41 +153,34 @@ class UserLogoutView(View):
 class PasswordChangeView(View):
     def get(self, request):
         form = CustomPasswordChangeForm(user=request.user)
+        logo = get_system_logo()
+        contact = Contact.objects.first()
         if request.user.user_type == UserType.ADMIN:
-            return render(request, 'users/admin_password_change.html', {'form': form})
-        return render(request, 'users/change_password.html', {'form': form})
+            return render(request, 'users/admin_password_change.html', {'form': form, 'logo': logo, 'contact': contact})
+        return render(request, 'users/change_password.html', {'form': form, 'logo': logo, 'contact': contact})
     
     def post(self, request):
         form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        logo = get_system_logo()
+        contact = Contact.objects.first()
         if form.is_valid():
-            form.save()
+            user = form.save()
+            update_session_auth_hash(request, user)  # Keep user logged in after password change
             messages.success(request, "Password changed successfully.")
-            return redirect("users:login")
+            return redirect("users:dashboard")
         else:
-            messages.error(request, "Invalid form submission.")
+            messages.error(request, "Please correct the errors below.")
         if request.user.user_type == UserType.ADMIN:
-            return render(request, 'users/admin_password_change.html', {'form': form})
-        return render(request, 'users/change_password.html', {'form': form})
+            return render(request, 'users/admin_password_change.html', {'form': form, 'logo': logo, 'contact': contact})
+        return render(request, 'users/change_password.html', {'form': form, 'logo': logo, 'contact': contact})
 
 @method_decorator(login_required, name='dispatch')
 class DashboardView(View):
     def get(self, request):
+        contact = Contact.objects.first()
+        # Get feedback queryset based on user permissions
         if request.user.user_type == UserType.ADMIN:
-            users = User.objects.all().count()
-            feedbacks = Feedback.objects.all().count()
-            pending_feedbacks = Feedback.objects.filter(status='pending').count()
-            solved_feedbacks = Feedback.objects.filter(status='solved').count()
-            closed_feedbacks = Feedback.objects.filter(status='closed').count()
-
-            context = {
-                'users': users,
-                'feedbacks': feedbacks,
-                'pending_feedbacks': pending_feedbacks,
-                'solved_feedbacks': solved_feedbacks,
-                'closed_feedbacks': closed_feedbacks,
-                'logo': get_system_logo(),
-            }
-            return render(request, 'users/dashboard/admin_index.html', context)
+            feedback_queryset = Feedback.objects.all()
         else:
             feedback_queryset = Feedback.objects.filter(
                 Q(email=request.user.email) |
@@ -171,15 +188,37 @@ class DashboardView(View):
                 Q(created_by=request.user) |
                 Q(uuid__in=request.user.feedbacks.values_list('uuid', flat=True))
             ).distinct()
-            
-            context = {
-                'feedbacks': feedback_queryset.count(),
-                'pending_feedbacks': feedback_queryset.filter(status='pending').count(),
-                'solved_feedbacks': feedback_queryset.filter(status='solved').count(),
-                'closed_feedbacks': feedback_queryset.filter(status='closed').count(),
-                'logo': get_system_logo(),
-            }
-            return render(request, 'users/dashboard/user_index.html', context)
+
+        # Calculate feedback statistics
+        feedbacks = feedback_queryset.count()
+        pending_feedbacks = feedback_queryset.filter(status='pending').count()
+        solved_feedbacks = feedback_queryset.filter(status='solved').count()
+        closed_feedbacks = feedback_queryset.filter(status='closed').count()
+        reviewed_feedbacks = feedback_queryset.filter(status__in=['solved', 'closed']).count()
+        
+        # Calculate rating counts
+        rating_counts = feedback_queryset.values('rating').annotate(count=Count('rating')).order_by('rating')
+        rating_dict = {'excellent': 0, 'good': 0, 'poor': 0}
+        for item in rating_counts:
+            if item['rating'] in rating_dict:
+                rating_dict[item['rating']] = item['count']
+
+        context = {
+            'users': User.objects.all().count() if request.user.user_type == UserType.ADMIN else None,
+            'feedbacks': feedbacks,
+            'pending_feedbacks': pending_feedbacks,
+            'solved_feedbacks': solved_feedbacks,
+            'closed_feedbacks': closed_feedbacks,
+            'reviewed_feedbacks': reviewed_feedbacks,
+            'excellent_feedbacks': rating_dict['excellent'],
+            'good_feedbacks': rating_dict['good'],
+            'poor_feedbacks': rating_dict['poor'],
+            'logo': get_system_logo(),
+            'contact': contact,
+        }
+        if request.user.user_type == UserType.ADMIN:
+            return render(request, 'users/dashboard/admin_index.html', context)
+        return render(request, 'users/dashboard/user_index.html', context)
     
     def post(self, request):
         pass
@@ -207,6 +246,7 @@ class ViewUsersView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET.get('search', '')
         context['logo'] = get_system_logo()
+        context['contact'] = Contact.objects.first()
         return context
 
 @method_decorator(login_required, name='dispatch')
@@ -215,9 +255,11 @@ class ProfileView(View):
 
     def get(self, request):
         user = request.user
+        logo = get_system_logo()
+        contact = Contact.objects.first()
         if request.user.user_type == UserType.ADMIN:
-            return render(request, 'users/dashboard/admin_index.html')
-        return render(request, self.template_name, {'user': user})
+            return render(request, 'users/admin_profile.html', {'user': user, 'logo': logo, 'contact': contact})
+        return render(request, self.template_name, {'user': user, 'logo': logo, 'contact': contact})
 
 @method_decorator(login_required, name='dispatch')
 class UpdateProfileView(View):
@@ -228,20 +270,25 @@ class UpdateProfileView(View):
 
     def get(self, request):
         user = request.user
-        return render(request, self.get_template_names(), {'user': user, 'logo': get_system_logo()})
+        logo = get_system_logo()
+        contact = Contact.objects.first()
+        return render(request, self.get_template_names(), {'user': user, 'logo': logo, 'contact': contact})
     
     def post(self, request):
         user = request.user
         profile_picture = request.FILES.get('profile_picture')
+        logo = get_system_logo()
+        contact = Contact.objects.first()
         if profile_picture:
             if user.profile_picture:
                 default_storage.delete(user.profile_picture.path)
             user.profile_picture = profile_picture
             user.save()
+            messages.success(request, "Profile picture updated successfully.")
             return redirect("users:dashboard")
         else:
             messages.error(request, "No profile picture uploaded.")
-            return render(request, self.get_template_names(), {'user': user, 'logo': get_system_logo()})
+            return render(request, self.get_template_names(), {'user': user, 'logo': logo, 'contact': contact})
 
 @method_decorator(login_required, name='dispatch')
 class UserDeleteView(View):
@@ -250,6 +297,7 @@ class UserDeleteView(View):
         if user and request.user.user_type == UserType.ADMIN:
             if user != request.user:
                 user.delete()
+                messages.success(request, "User deleted successfully.")
         else:
             messages.error(request, "User not found.")
         return redirect("users:manage_users")
@@ -262,7 +310,9 @@ class AddUserView(View):
         if request.user.user_type != UserType.ADMIN:
             messages.error(request, "You do not have permission to access this page.")
             return redirect("users:dashboard")
-        return render(request, self.template_name, {"logo": get_system_logo()})
+        logo = get_system_logo()
+        contact = Contact.objects.first()
+        return render(request, self.template_name, {"logo": logo, 'contact': contact})
     
     def post(self, request):
         if request.user.user_type != UserType.ADMIN:
@@ -291,6 +341,8 @@ class AddUserView(View):
                 "full_name": full_name,
                 "full_address": full_address,
                 "mobile": mobile,
+                'logo': get_system_logo(),
+                'contact': Contact.objects.first(),
             })
         
         user = User.objects.create(
@@ -328,6 +380,7 @@ class ManageUsersView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET.get('search', '')
         context['logo'] = get_system_logo()
+        context['contact'] = Contact.objects.first()
         return context
 
 class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -353,6 +406,7 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['logo'] = get_system_logo()
+        context['contact'] = Contact.objects.first()
         return context
 
 class ForgotPasswordView(View):
@@ -360,8 +414,10 @@ class ForgotPasswordView(View):
         if request.user.is_authenticated:
             return redirect("users:dashboard")
         logo = get_system_logo()
+        contact = Contact.objects.first()
         context = {
             'logo': logo,
+            'contact': contact,
         }
         return render(request, 'users/forgot_password.html', context)
 
@@ -389,9 +445,11 @@ class VerifyOTPView(View):
     def get(self, request):
         if request.user.is_authenticated:
             return redirect("users:dashboard")
-        system_logo = get_system_logo()
+        logo = get_system_logo()
+        contact = Contact.objects.first()
         context = {
-            'logo': system_logo,
+            'logo': logo,
+            'contact': contact,
         }
         return render(request, 'users/verify_otp.html', context)
 
@@ -417,9 +475,11 @@ class ResetPasswordView(View):
             messages.error(request, "Please verify your OTP first.")
             return redirect("users:forgot_password")
         
-        system_logo = get_system_logo()
+        logo = get_system_logo()
+        contact = Contact.objects.first()
         context = {
-            'logo': system_logo,
+            'logo': logo,
+            'contact': contact,
         }
         return render(request, 'users/reset_password.html', context)
     
@@ -454,3 +514,51 @@ class ContactView(View):
             'contact': contact,
         }
         return render(request, 'users/contact.html', context)
+
+@method_decorator(login_required, name='dispatch')
+class UpdateContactView(View):
+    def test_func(self):
+        return self.request.user.user_type == UserType.ADMIN
+
+    def get(self, request):
+        contact = Contact.objects.first()
+        logo = get_system_logo()
+        return render(request, 'users/update_contact.html', {'contact': contact, 'logo': logo})
+
+    def post(self, request):
+        if request.user.user_type != UserType.ADMIN:
+            messages.error(request, "You do not have permission to update contact information.")
+            return redirect("users:dashboard")
+        
+        contact = Contact.objects.first()
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+
+        errors = []
+        if not all([email, phone, address]):
+            errors.append("All fields are required.")
+        if not phone.isdigit() or len(phone) != 10:
+            errors.append("Enter a valid 10-digit phone number.")
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return render(request, 'users/update_contact.html', {
+                'contact': contact,
+                'logo': get_system_logo(),
+                'email': email,
+                'phone': phone,
+                'address': address,
+            })
+
+        if contact:
+            contact.email = email
+            contact.phone = phone
+            contact.address = address
+            contact.save()
+        else:
+            Contact.objects.create(email=email, phone=phone, address=address)
+        
+        messages.success(request, "Contact information updated successfully.")
+        return redirect("users:dashboard")

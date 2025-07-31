@@ -1,17 +1,15 @@
+<!-- users/templates/users/dashboard/manage_users.html -->
 {% extends "admin_dashboard.html" %}
 {% load static %}
 
 {% block dashboard_content %}
-<!-- Content Area -->
 <div class="content-wrapper">
-    <!-- Add your dynamic content here -->
     <div class="card">
         {% if messages %}
         <div class="messages">
             {% for message in messages %}
                 <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
                     {{ message }}
-                    <!-- Close Button -->
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
@@ -24,7 +22,6 @@
                     <i class="fas fa-plus"></i> Add New
                 </a>
                 <div class="search-box">
-                    <!-- Search Form -->
                     <form method="get" action="{% url 'users:manage_users' %}">
                         <input type="text" name="search" placeholder="Search users..." value="{{ search_query }}">
                         <button type="submit">
@@ -45,11 +42,11 @@
                             <th>Address</th>
                             <th>Email</th>
                             <th>Mobile</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Sample Data -->
                         {% for user in users %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
@@ -70,8 +67,15 @@
                             <td>{{ user.email }}</td>
                             <td>{{ user.mobile }}</td>
                             <td>
+                                {% if user.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Deactivated</span>
+                                {% endif %}
+                            </td>
+                            <td>
                                 <button class="btn btn-edit">
-                                    <a href="{% url 'users:user_update'  user.uuid %}"><i class="fas fa-edit"></i></a>
+                                    <a href="{% url 'users:user_update' user.uuid %}"><i class="fas fa-edit"></i></a>
                                 </button>
                                 <form action="{% url 'users:delete_user' user.uuid %}" method="POST" style="display: inline-block;">
                                     {% csrf_token %}
@@ -79,17 +83,23 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
+                                <form action="{% url 'users:toggle_user_active' user.uuid %}" method="POST" style="display: inline-block;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-{% if user.is_active %}danger{% else %}success{% endif %}" 
+                                            onclick="return confirm('Are you sure you want to {% if user.is_active %}deactivate{% else %}activate{% endif %} this user?');">
+                                        <i class="fas fa-{% if user.is_active %}ban{% else %}check{% endif %}"></i> {% if user.is_active %}Deactivate{% else %}Activate{% endif %}
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center">No users found.</td>
+                            <td colspan="7" class="text-center">No users found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            <!-- Pagination -->
             <div class="pagination-wrapper mt-3">
                 <nav aria-label="User pagination">
                     <ul class="pagination justify-content-center">
@@ -129,6 +139,5 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 {% endblock dashboard_content %}

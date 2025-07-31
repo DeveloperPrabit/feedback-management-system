@@ -1,8 +1,19 @@
+/* create_invoice.css */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+}
+
+.invoice-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form {
@@ -15,48 +26,30 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.invoice-container {
-    width: 50%;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 8px;
-    background-color: #fff;
-    color: #333;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
 header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 30px;
-    margin-bottom: 20px;
-}
-
-.logo {
-    height: 50px;
-    width: auto;
-}
-
-.invoice-title {
-    font-size: 25px;
-    font-weight: bold;
-    color: #fff;
-    background: linear-gradient(45deg, #28a745, #218838);
-    padding: 10px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 0 15px;
+        flex-direction: column;
+    }
+    .logo {
+        max-width: 100px; /* Adjust based on your logo size */
+        margin: 0 auto;
+    }
+    .invoice-title {
+        text-align: center;
+        margin: 10px 0;
+    }
 .section {
     margin-bottom: 15px;
 }
 
 .section-title {
-    font-size: 19px;
+    font-size: 24px;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
     color: #333;
 }
 
@@ -81,7 +74,7 @@ header {
 .radio-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 5px;
 }
 
 .radio-option {
@@ -109,7 +102,7 @@ header {
 .flex {
     display: flex;
     justify-content: space-between;
-    gap: 25px;
+    gap: 5px;
     align-items: center;
 }
 
@@ -123,10 +116,10 @@ header {
 .submit-btn {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color: #28a745;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
@@ -138,7 +131,7 @@ header {
 
 .alert {
     padding: 10px;
-    margin: 15px 0;
+    margin: 10px 0;
     border-radius: 5px;
     background-color: #f8d7da;
     color: #721c24;
@@ -195,4 +188,31 @@ header {
     0% { opacity: 1; }
     90% { opacity: 1; }
     100% { opacity: 0; }
+}
+
+
+
+/* Force anonymous label and yes/no to stack properly */
+.section label.form-label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Align 'हो' and 'होइन' horizontally */
+.flex {
+    display: flex;
+    justify-content: start;
+    gap: 30px;
+}
+
+/* Improve appearance of radio labels */
+.flex .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Optional: prevent weird wrapping on mobile */
+.flex .radio-option label {
+    white-space: nowrap;
 }

@@ -1,130 +1,238 @@
-{% extends "user_dashboard.html" %}
+{% extends request.user.is_authenticated|yesno:"user_dashboard.html,base_unauthenticated.html" %}
+
 {% load static %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/create_invoice.css' %}">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+.invoice-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.section-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.form-label {
+    font-weight: bold;
+}
+.radio-group, .flex {
+    display: flex;
+    gap: 15px;
+}
+.alert {
+    margin-top: 10px;
+}
+.submit-btn {
+    background-color: #0071BC;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.captcha-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.captcha-refresh {
+    cursor: pointer;
+    color: #28a745;
+    font-size: 14px;
+    text-decoration: none;
+}
+.captcha-refresh:hover {
+    text-decoration: underline;
+}
+.captcha-error {
+    color: #721c24;
+    font-size: 14px;
+    margin-top: 5px;
+}
+</style>
 {% endblock css %}
 
 {% block dashboard_content %}
+{% block content %}
 <div class="invoice-container">
     <header>
-        <img src="{% if logo and logo.logo %}{{ logo.logo.url }}{% else %}{% static 'images/logo.jpeg' %}{% endif %}" alt="Office Logo" class="logo" onerror="this.src='{% static 'images/my.jpg' %}'">
-        <h1 class="invoice-title">{{ request.user.full_name|default:"Your Office" }}</h1>
+        <img src="{% if user_id and creator.profile_picture %}{{ creator.profile_picture.url }}{% elif request.user.is_authenticated and request.user.profile_picture %}{{ request.user.profile_picture.url }}{% elif logo %}{{ logo.logo.url }}{% else %}{% static 'images/logo.jpeg' %}{% endif %}" alt="प्रोफाइल वा कार्यालय लोगो" class="logo" onerror="this.src='{% static 'images/logo.jpeg' %}'">
+        <h1 class="invoice-title">{{ creator_name|default:"तपाईंको कार्यालय" }}</h1>
     </header>
 
-    <h2 class="section-title text-center mb-3">सुझाव / गुनासो / प्रतिक्रिया पेटीका</h2>
-    <b><h2 class="section-title text-center mb-3">(Suggestion / Feedback / Complaint Box)</h2> </b>
+    <h2 class="section-title text-center mb-3" style="color: #0071BC;">डिजिटल सुझाव पेटीका | 
+Digital Feedback Form</h2>
 
-    <form class="form" method="POST" action="{% if feedback_uuid %}?feedback_uuid={{ feedback_uuid }}{% endif %}" enctype="multipart/form-data">
+    <form class="form" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-
         <!-- Messages -->
         {% if messages %}
         <div class="message-container">
             {% for message in messages %}
-                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">{{ message }}</div>
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">{{ message }}</div>
             {% endfor %}
         </div>
+        {% endif %}
+        {% if success_message %}
+        <div class="alert alert-success">{{ success_message }}</div>
         {% endif %}
 
         <!-- Rating -->
         <div class="section">
-            <label class="form-label"><strong>यस कार्यालयको सेवा तपाईलाई कस्तो लाग्यो ? *(How did you like the service of this office?
-)</strong></label>
+            <label class="form-label"><strong>यस कार्यालयको सेवा तपाईलाई कस्तो लाग्यो ? *</strong></label>
             <div class="radio-group">
                 {% for radio in form.rating %}
-                    <div class="radio-option">
-                        {{ radio.tag }}
-                        <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                    </div>
+                <div class="radio-option">
+                    {{ radio.tag }}
+                    <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                </div>
                 {% endfor %}
             </div>
             {% if form.rating.errors %}
-                <div class="alert alert-error">{{ form.rating.errors }}</div>
+            <div class="alert alert-error">{{ form.rating.errors }}</div>
             {% endif %}
         </div>
 
         <!-- Feedback -->
         <div class="section">
-            <label for="{{ form.feedback_text.id_for_label }}" class="form-label"><strong>तपाईंको सुझाव / गुनासो / प्रतिक्रिया दिनुहाेस  (Give Your Suggestion / Feedback or Complaint)
-</strong></label>
+            <label for="{{ form.feedback_text.id_for_label }}" class="form-label"><strong>तपाईंको सुझाव / गुनासो / प्रतिक्रिया दिनुहोस्</strong></label>
             {{ form.feedback_text }}
             {% if form.feedback_text.errors %}
-                <div class="alert alert-error">{{ form.feedback_text.errors }}</div>
+            <div class="alert alert-error">{{ form.feedback_text.errors }}</div>
             {% endif %}
         </div>
 
         <!-- File Upload -->
         <div class="section">
-            <label for="{{ form.attachment.id_for_label }}" class="form-label">सम्बन्धित फोटो अथवा फाईल अपलोड गर्नुहोस (Upload related photo or file (Optional))</label>
+            <label for="{{ form.attachment.id_for_label }}" class="form-label">सम्बन्धित फोटो अथवा फाइल अपलोड गर्नुहोस् (वैकल्पिक)</label>
             {{ form.attachment }}
             {% if form.attachment.errors %}
-                <div class="alert alert-error">{{ form.attachment.errors }}</div>
+            <div class="alert alert-error">{{ form.attachment.errors }}</div>
             {% endif %}
         </div>
 
         <!-- Personal Info -->
         <div class="section grid-two">
             <div>
-                <label for="{{ form.name.id_for_label }}" class="form-label">नाम (Name)*</label>
+                <label for="{{ form.name.id_for_label }}" class="form-label">नाम *</label>
                 {{ form.name }}
                 {% if form.name.errors %}
-                    <div class="alert alert-error">{{ form.name.errors }}</div>
+                <div class="alert alert-error">{{ form.name.errors }}</div>
                 {% endif %}
             </div>
             <div>
-                <label for="{{ form.address.id_for_label }}" class="form-label">ठेगाना (Address)*</label>
+                <label for="{{ form.address.id_for_label }}" class="form-label">ठेगाना *</label>
                 {{ form.address }}
                 {% if form.address.errors %}
-                    <div class="alert alert-error">{{ form.address.errors }}</div>
+                <div class="alert alert-error">{{ form.address.errors }}</div>
                 {% endif %}
             </div>
             <div>
-                <label for="{{ form.mobile.id_for_label }}" class="form-label">माेबाईल (Mobile)*</label>
+                <label for="{{ form.mobile.id_for_label }}" class="form-label">मोबाइल *</label>
                 {{ form.mobile }}
                 {% if form.mobile.errors %}
-                    <div class="alert alert-error">{{ form.mobile.errors }}</div>
+                <div class="alert alert-error">{{ form.mobile.errors }}</div>
                 {% endif %}
             </div>
             <div>
-                <label for="{{ form.email.id_for_label }}" class="form-label">ईमेल (Email)</label>
+                <label for="{{ form.email.id_for_label }}" class="form-label">ईमेल</label>
                 {{ form.email }}
                 {% if form.email.errors %}
-                    <div class="alert alert-error">{{ form.email.errors }}</div>
+                <div class="alert alert-error">{{ form.email.errors }}</div>
                 {% endif %}
             </div>
         </div>
 
         <!-- Anonymous Option -->
         <div class="section">
-            <label class="form-label"><strong>Anonymous My Info?</strong></label>
+            <label class="form-label"><strong>गोप्य राख्नुहोस्</strong></label>
             <div class="flex">
                 {% for radio in form.anonymous %}
-                    <div class="radio-option">
-                        {{ radio.tag }} <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                    </div>
+                <div class="radio-option">
+                    {{ radio.tag }} <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                </div>
                 {% endfor %}
             </div>
             {% if form.anonymous.errors %}
-                <div class="alert alert-error">{{ form.anonymous.errors }}</div>
+            <div class="alert alert-error">{{ form.anonymous.errors }}</div>
             {% endif %}
         </div>
 
-        <!-- Feedback Date -->
-        {{ form.feedback_date }}
+        <!-- CAPTCHA -->
+        <div class="section">
+            <label for="{{ form.captcha.id_for_label }}" class="form-label"><strong>कृपया क्याप्चा प्रमाणित गर्नुहोस् *</strong></label>
+            <div class="captcha-container">
+                {{ form.captcha }}
+                <a href="javascript:void(0)" class="captcha-refresh">Refresh CAPTCHA</a>
+            </div>
+            <div class="captcha-error" style="display: none;"></div>
+            {% if form.captcha.errors %}
+            <div class="alert alert-error">{{ form.captcha.errors }}</div>
+            {% endif %}
+        </div>
 
         <!-- Submit -->
         <div class="section text-center">
-            <button type="submit" class="submit-btn">पेश गर्नुहोस (Submit)</button>
+            <button type="submit" class="submit-btn">पेश गर्नुहोस्</button>
         </div>
     </form>
 
-    <!-- Check for success message -->
+    <!-- Success Message -->
     {% for message in messages %}
-        {% if 'success' in message.tags %}
-            <p class="note text-center">तपाईको अमुल्य सुझावको लागि धन्यबाद । सुझावको बिवरण जाच्छ गरी आवश्यक प्रकृयामा जानेछौ ।</p>
-        {% endif %}
+    {% if 'success' in message.tags %}
+    <p class="note text-center">तपाईंको अमूल्य सुझावको लागि धन्यवाद। सुझावको विवरण जाँच गरी आवश्यक प्रक्रियामा जानेछौ।</p>
+    {% endif %}
     {% endfor %}
 </div>
+
+<!-- JavaScript for CAPTCHA Refresh -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const refreshLink = document.querySelector('.captcha-refresh');
+    const captchaError = document.querySelector('.captcha-error');
+    if (refreshLink) {
+        refreshLink.addEventListener('click', function() {
+            fetch('/captcha/refresh/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'  // Add AJAX header
+                }
+            })
+            .then(response => {
+                console.log('CAPTCHA refresh response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('CAPTCHA refresh data:', data);
+                const captchaImg = document.querySelector('.captcha');
+                if (captchaImg) {
+                    captchaImg.src = data.image_url;
+                }
+                const captchaKeyInput = document.querySelector('input[name="captcha_0"]');
+                const captchaValueInput = document.querySelector('input[name="captcha_1"]');
+                if (captchaKeyInput && captchaValueInput) {
+                    captchaKeyInput.value = data.key;
+                    captchaValueInput.value = '';
+                }
+                captchaError.style.display = 'none';
+                captchaError.textContent = '';
+            })
+            .catch(error => {
+                console.error('Error refreshing CAPTCHA:', error);
+                captchaError.style.display = 'block';
+                captchaError.textContent = 'Failed to refresh CAPTCHA. Please try again later.';
+            });
+        });
+    }
+});
+</script>
+{% endblock content %}
 {% endblock dashboard_content %}

@@ -9,7 +9,7 @@
 {% block dashboard_content %}
 <div class="feedback-container">
     <header>
-        <img src="{% if logo and logo.logo %}{{ logo.logo.url }}{% else %}{% static 'images/logo.jpeg' %}{% endif %}" alt="Office Logo" class="logo" onerror="this.src='{% static 'images/my.jpg' %}'">
+        <img src="{% if user_id and creator.profile_picture %}{{ creator.profile_picture.url }}{% elif request.user.is_authenticated and request.user.profile_picture %}{{ request.user.profile_picture.url }}{% elif logo %}{{ logo.logo.url }}{% else %}{% static 'images/logo.jpeg' %}{% endif %}" alt="Office Logo" class="logo" onerror="this.src='{% static 'images/my.jpg' %}'">
         <h1 class="invoice-title">{{ request.user.full_name|default:"Your Office" }}</h1>
     </header>
 
@@ -18,7 +18,7 @@
     <div class="feedback-details">
         <div class="section">
             <p><strong>Serial Number:</strong> {{ feedback.serial_number }}</p>
-            <p><strong>Date:</strong> {{ feedback.feedback_date }}</p>
+            <p><strong>Date & Time:</strong> {{ feedback.created_at|date:"Y-m-d h:i A" }}</p>
             {% if not feedback.anonymous %}
                 <p><strong>Name:</strong> {{ feedback.name|default:"N/A" }}</p>
                 <p><strong>Address:</strong> {{ feedback.address|default:"N/A" }}</p>
@@ -33,7 +33,7 @@
                 <p><strong>Attachment:</strong> <a href="{{ feedback.attachment.url }}" target="_blank">View Attachment</a></p>
             {% endif %}
             <p><strong>Status:</strong> {{ feedback.status }}</p> <!-- Updated to use raw status value -->
-            <p><strong>PDF:</strong> <a href="{{ pdf_url }}" class="btn btn-secondary">Download PDF</a></p>
+            <p><strong>PDF:</strong> <a href="{{ pdf_url }}" class="btn btn-secondary" style="color: white;" target="_blank" >Download PDF</a></p>
         </div>
     </div>
 </div>

@@ -1,0 +1,83 @@
+.feedback-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Title */
+.feedback-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #007bff;
+    font-size: 26px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+/* Make p tags behave like a table */
+.feedback-container p {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    margin: 0;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+}
+
+.feedback-container p strong {
+    width: 40%;
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Links */
+.feedback-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.feedback-container a:hover {
+    text-decoration: underline;
+}
+
+/* Form styling like a footer row */
+.feedback-container form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.feedback-container select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.feedback-container button {
+    padding: 8px 16px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.feedback-container button:hover {
+    background: #0056b3;
+}
+
+/* Optional: Make alternating row colors */
+.feedback-container p:nth-child(even) {
+    background-color: #f9f9f9;
+}

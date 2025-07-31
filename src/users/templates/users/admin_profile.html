@@ -1,19 +1,19 @@
-{% extends "user_dashboard.html" %}
+{% extends 'admin_dashboard.html' %}
 {% load static %}
 
 {% block dashboard_content %}
-<div class="content-wrapper">
-    <h2>Admin Profile</h2>
+<div class="container feedback-container mt-4">
+    <h2 class="text-center mb-4">Admin Profile</h2>
     <div class="card">
         <div class="card-body">
+            <div class="text-center">
+                <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/feedbox.jpg' %}{% endif %}" alt="Profile Picture" class="rounded-circle mb-3" width="150" height="150">
+            </div>
             <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Name:</strong> {{ user.full_name|default:"N/A" }}</p>
+            <p><strong>Full Name:</strong> {{ user.full_name|default:"N/A" }}</p>
             <p><strong>Address:</strong> {{ user.full_address|default:"N/A" }}</p>
             <p><strong>Mobile:</strong> {{ user.mobile|default:"N/A" }}</p>
-            {% if user.profile_picture %}
-                <p><strong>Profile Picture:</strong> <img src="{{ user.profile_picture.url }}" alt="Profile" style="max-width: 100px;"></p>
-            {% endif %}
-            <a href="{% url 'users:profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+            <a href="{% url 'users:profile_edit' %}" class="btn btn-primary">Edit Profile Picture</a>
         </div>
     </div>
 </div>

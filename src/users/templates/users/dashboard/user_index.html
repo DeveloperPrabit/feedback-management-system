@@ -4,7 +4,7 @@
 {% block css %}
 <style>
     .dashboard-cards {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Noto Sans Devanagari', sans-serif;
     }
 
     .small-box {
@@ -17,6 +17,7 @@
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         text-align: center;
+        margin-bottom: 30px;
     }
 
     .small-box:hover {
@@ -66,28 +67,20 @@
         text-decoration: none;
     }
 
-    /* Color Variants */
     .bg-yellow { background-color: #f1c40f !important; }
     .bg-red { background-color: #e74c3c !important; }
     .bg-blue { background-color: #3498db !important; }
-
-    /* Feedback Stats Badges */
-    .feedback-stats .badge {
-        margin-left: 10px;
-        font-size: 14px;
-        padding: 5px 10px;
-        color: #fff;
-    }
-
     .bg-green { background-color: #28a745 !important; }
+    .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    .card-header { background: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 15px; }
+    .card-header h4 { margin: 0; font-size: 18px; color: #343a40; }
+    .card-body { padding: 15px; }
+    .card-body p { margin: 5px 0; font-size: 16px; color: #343a40; }
+    .chart { margin-bottom: 20px; }
 
     @media (max-width: 768px) {
         .small-box {
             margin-bottom: 20px;
-        }
-        .feedback-stats .badge {
-            margin-left: 5px;
-            font-size: 12px;
         }
     }
 </style>
@@ -96,64 +89,216 @@
 {% block dashboard_content %}
 <div class="dashboard-cards">
     <div class="container-fluid text-light">
-        <div class="row align-items-center">
+        <p style="color: #161616ff; font-size: 30px; text-align: left; font-weight: bold;">Welcome to Digital Feedback Portal</p>
+        <div class="row mb-3">
             <div class="col-sm-6">
-                <h3 class="mb-0">User Dashboard</h3>
-            </div>
-            <div class="col-sm-6 text-end">
-                <div class="feedback-stats">
-                    <span class="badge bg-yellow">Pending: {{ pending_feedbacks }}</span>
-                    <span class="badge bg-green">Solved: {{ solved_feedbacks }}</span>
-                    <span class="badge bg-blue">Closed: {{ closed_feedbacks }}</span>
-                </div>
+                <h3 class="mb-0" style="color: #0071BC; font-weight: bold;">QR Feedbacks</h3>
             </div>
         </div>
-    </div>
 
-    <div class="container-fluid mt-3">
+        <!-- QR Feedback Cards -->
         <div class="row">
-            <!-- Total No. of Feedbacks -->
             <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="small-box bg-yellow">
                     <h2>{{ feedbacks }}</h2>
-                    <p>Total No. of Feedbacks</p>
-                    <div class="icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
+                    <p>Total Feedbacks</p>
+                    <div class="icon"><i class="fas fa-file-alt"></i></div>
                     <a href="{% url 'invoices:view_feedbacks' %}" class="small-box-footer">
                         More info <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>
 
-            <!-- Total No. of Pending Feedbacks -->
             <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="small-box bg-red">
                     <h2>{{ pending_feedbacks }}</h2>
-                    <p>Total No. of Pending Feedbacks</p>
-                    <div class="icon">
-                        <i class="fas fa-hourglass-half"></i>
-                    </div>
+                    <p>Total Pending Feedbacks</p>
+                    <div class="icon"><i class="fas fa-hourglass-half"></i></div>
                     <a href="{% url 'invoices:view_feedbacks' %}?status=pending" class="small-box-footer">
                         More info <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>
 
-            <!-- Total No. of Reviewed Feedbacks -->
             <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="small-box bg-blue">
                     <h2>{{ closed_feedbacks }}</h2>
-                    <p>Total No. of Closed Feedbacks</p>
-                    <div class="icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
+                    <p>Total Closed Feedbacks</p>
+                    <div class="icon"><i class="fas fa-check-circle"></i></div>
                     <a href="{% url 'invoices:view_feedbacks' %}?status=closed" class="small-box-footer">
                         More info <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>
         </div>
+
+        <div class="row mb-3">
+            <div class="col-sm-6">
+                <h3 class="mb-0" style="color: #0071BC; font-weight: bold;">Box Feedbacks</h3>
+            </div>
+        </div>
+        <!-- Box Feedback Cards -->
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="small-box bg-yellow">
+                    <h2>0</h2>
+                    <p>Total Box Feedbacks</p>
+                    <div class="icon"><i class="fas fa-box"></i></div>
+                    <a href="#" class="small-box-footer disabled">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="small-box bg-red">
+                    <h2>0</h2>
+                    <p>Pending Box Feedbacks</p>
+                    <div class="icon"><i class="fas fa-hourglass-half"></i></div>
+                    <a href="#" class="small-box-footer disabled">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="small-box bg-blue">
+                    <h2>0</h2>
+                    <p>Closed Box Feedbacks</p>
+                    <div class="icon"><i class="fas fa-check-circle"></i></div>
+                    <a href="#" class="small-box-footer disabled">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Rating Charts -->
+        {% if excellent_feedbacks or good_feedbacks or poor_feedbacks %}
+        <div class="row mb-3">
+            <div class="col-sm-6">
+                <h3 class="mb-0" style="color: #0071BC; font-weight: bold;">प्रतिक्रिया रेटिङ विवरण</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-secondary">
+                    <div class="card-header">
+                        <h4>रेटिङ विवरण (पाई चार्ट)</h4>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart">
+                            <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-secondary">
+                    <div class="card-header">
+                        <h4>रेटिङ गणना (बार चार्ट)</h4>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart">
+                            <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="row mb-3">
+            <div class="col-12">
+                <p class="text-center" style="color: #343a40;">चार्टको लागि कुनै प्रतिक्रिया डेटा उपलब्ध छैन।</p>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
+
+{% block custom_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+$(document).ready(function() {
+    var ratingData = {
+        labels: ['उत्कृष्ट', 'राम्रो', 'नराम्रो'],
+        datasets: [{
+            data: [{{ excellent_feedbacks }}, {{ good_feedbacks }}, {{ poor_feedbacks }}],
+            backgroundColor: ['#28a745', '#f1c40f', '#e74c3c'],
+        }]
+    };
+
+    var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
+    var pieChart = new Chart(pieChartCanvas, {
+        type: 'pie',
+        data: ratingData,
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'प्रतिक्रिया रेटिङ विवरण'
+                }
+            }
+        }
+    });
+
+    var barChartCanvas = $('#barChart').get(0).getContext('2d');
+    var barChart = new Chart(barChartCanvas, {
+        type: 'bar',
+        data: {
+            labels: ['उत्कृष्ट', 'राम्रो', 'नराम्रो'],
+            datasets: [{
+                label: 'रेटिङ अनुसार प्रतिक्रिया गणना',
+                data: [{{ excellent_feedbacks }}, {{ good_feedbacks }}, {{ poor_feedbacks }}],
+                backgroundColor: ['#28a745', '#f1c40f', '#e74c3c'],
+                borderColor: ['#28a745', '#f1c40f', '#e74c3c'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'प्रतिक्रियाको संख्या'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'रेटिङ'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'रेटिङ अनुसार प्रतिक्रिया गणना'
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock custom_js %}
 {% endblock dashboard_content %}

@@ -5,56 +5,117 @@
 <link rel="stylesheet" href="{% static 'css/feedback_list.css' %}" {% if not debug %}disabled{% endif %}>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<style> 
-    /* Actions column enhancements */
-.table td:last-child {
-    min-width: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: stretch;
-    justify-content: center;
-}
-
-/* Make buttons and selects full-width and consistent */
-.table td:last-child .btn,
-.table td:last-child .form-select {
-    width: 100%;
-    font-size: 13px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    box-shadow: none;
+<style>
+    /* Container styling */
+.container {
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 40px 20px;
 }
 
-/* Make sure inline form has spacing */
-.table td:last-child form {
+/* Heading styling */
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* Table styling */
+.table {
     width: 100%;
-    margin: 0;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Button hover improvements */
-.table td .btn-info:hover {
-    background-color: #0d6efd !important;
-    border-color: #0b5ed7 !important;
+/* Table headers */
+.table th {
+    background-color: #1a237e;
+    color: white;
+    font-weight: bold;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 2px solid #ccc;
+    white-space: nowrap;
 }
 
-.table td .btn-secondary:hover {
-    background-color: #5c636a !important;
-    border-color: #565e64 !important;
+/* Table cells */
+.table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
 }
 
-/* Responsive tweaks */
-@media (min-width: 768px) {
+/* Narrow column widths */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 40px;
+    text-align: center;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2),
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    width: 150px;
+    white-space: nowrap;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    width: 100%;
+}
+
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    width: 200px;
+}
+
+/* Actions column - tighter and horizontal */
+.table td:last-child {
+    min-width: 130px;
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Button inside actions */
+.table td:last-child .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    background-color: #1a237e;
+    color: white;
+    border: none;
+}
+
+/* Dropdown in actions */
+.table td:last-child .form-select {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    min-width: 80px;
+    white-space: nowrap;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
     .table td:last-child {
         flex-direction: row;
-        flex-wrap: wrap;
         gap: 6px;
+        justify-content: center;
     }
 
     .table td:last-child .btn,
     .table td:last-child .form-select {
-        flex: 1 1 calc(33.33% - 4px);
+        flex: unset;
+        width: auto;
     }
 }
 
@@ -63,28 +124,38 @@
 
 {% block dashboard_content %}
 <div class="container feedback-container mt-4">
+    <!-- Display Messages -->
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <h2 class="text-center mb-4">Your Feedback</h2>
     <form method="GET" class="mb-4">
         <div class="row">
             <div class="col-md-3 mb-2">
-                <input type="text" name="search" placeholder="Search feedback..." value="{{ request.GET.search|default:'' }}" class="form-control">
+                <input type="text" name="search" placeholder="Search feedback..." value="{{ search|default:'' }}" class="form-control">
+            </div>  
+            <div class="col-md-3 mb-2">
+                <input type="date" name="start_date" value="{{ start_date|default:'' }}" class="form-control">
             </div>
             <div class="col-md-3 mb-2">
-                <input type="date" name="start_date" value="{{ request.GET.start_date|default:'' }}" class="form-control">
-            </div>
-            <div class="col-md-3 mb-2">
-                <input type="date" name="end_date" value="{{ request.GET.end_date|default:'' }}" class="form-control">
+                <input type="date" name="end_date" value="{{ end_date|default:'' }}" class="form-control">
             </div>
             <div class="col-md-3 mb-2">
                 <select name="status" class="form-select">
                     <option value="">All Statuses</option>
-                    <option value="pending" {% if request.GET.status|default:'' == 'pending' %}selected{% endif %}>Pending</option>
-                    <option value="solved" {% if request.GET.status|default:'' == 'solved' %}selected{% endif %}>Solved</option>
-                    <option value="closed" {% if request.GET.status|default:'' == 'closed' %}selected{% endif %}>Closed</option>
+                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="solved" {% if status == 'solved' %}selected{% endif %}>Solved</option>
+                    <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
                 </select>
             </div>
             <div class="col-md-12 text-center">
                 <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{% url 'invoices:download_feedbacks' %}?{% if search %}search={{ search|urlencode }}&{% endif %}{% if start_date %}start_date={{ start_date|urlencode }}&{% endif %}{% if end_date %}end_date={{ end_date|urlencode }}&{% endif %}{% if status %}status={{ status|urlencode }}{% endif %}" class="btn btn-primary">Download Feedbacks</a>
             </div>
         </div>
     </form>
@@ -92,39 +163,49 @@
     <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
-                <th>Serial Number</th>
+                <th>S.N</th>
+                <th>Date & Time</th>
                 <th>Name</th>
                 <th>Feedback</th>
                 <th>Rating</th>
                 <th>Status</th>
+                <th>Details</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for feedback in feedbacks %}
             <tr>
-                <td>{{ feedback.serial_number }}</td>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ feedback.created_at|date:"Y-m-d H:i:s" }}</td>
                 <td>{% if feedback.anonymous %}Anonymous{% else %}{{ feedback.name|default:"N/A" }}{% endif %}</td>
                 <td>{{ feedback.feedback_text|truncatewords:20 }}</td>
                 <td>{{ feedback.get_rating_display }}</td>
                 <td>{{ feedback.get_status_display }}</td>
                 <td>
-                    <a href="{% url 'invoices:feedback_detail' feedback.uuid %}" class="btn btn-sm btn-info">View</a>
-                    <form action="{% url 'invoices:update_status' feedback.uuid %}" method="POST" style="display: inline;">
+                    <a href="{% url 'invoices:feedback_detail' feedback_uuid=feedback.uuid %}" class="btn btn-sm btn-info mb-1">View</a>
+                </td>
+                <td>
+                    {% if feedback.created_by is None and feedback.email == request.user.email or feedback.mobile == request.user.mobile %}
+                    <form action="{% url 'invoices:claim_feedback' feedback_uuid=feedback.uuid %}" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-primary mb-1">Claim</button>
+                    </form>
+                    {% endif %}
+                    <form action="{% url 'invoices:update_status' feedback_uuid=feedback.uuid %}" method="POST" style="display: inline;">
                         {% csrf_token %}
                         <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="" {% if not feedback.status %}selected{% endif %} disabled>Select Status</option>
-                            <option value="pending" {% if feedback.status == 'pending' %}selected{% endif %}>Pending</option>
-                            <option value="solved" {% if feedback.status == 'solved' %}selected{% endif %}>Solved</option>
-                            <option value="closed" {% if feedback.status == 'closed' %}selected{% endif %}>Closed</option>
+                            <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="solved" {% if status == 'solved' %}selected{% endif %}>Solved</option>
+                            <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
                         </select>
                     </form>
-                    <a href="{% url 'invoices:download_feedback' feedback.uuid %}" class="btn btn-sm btn-secondary" target="_blank">Download PDF</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6" class="text-center">No feedback found.</td>
+                <td colspan="8" class="text-center">No feedback found.</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -133,11 +214,11 @@
     {% if is_paginated %}
     <div class="pagination d-flex justify-content-center">
         {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}{% if request.GET.start_date %}&start_date={{ request.GET.start_date|urlencode }}{% endif %}{% if request.GET.end_date %}&end_date={{ request.GET.end_date|urlencode }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status|urlencode }}{% endif %}" class="btn btn-outline-primary mx-1">Previous</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search|urlencode }}{% endif %}{% if start_date %}&start_date={{ start_date|urlencode }}{% endif %}{% if end_date %}&end_date={{ end_date|urlencode }}{% endif %}{% if status %}&status={{ status|urlencode }}{% endif %}" class="btn btn-outline-primary mx-1">Previous</a>
         {% endif %}
         <span class="align-self-center mx-2">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}{% if request.GET.start_date %}&start_date={{ request.GET.start_date|urlencode }}{% endif %}{% if request.GET.end_date %}&end_date={{ request.GET.end_date|urlencode }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status|urlencode }}{% endif %}" class="btn btn-outline-primary mx-1">Next</a>
+            <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search|urlencode }}{% endif %}{% if start_date %}&start_date={{ start_date|urlencode }}{% endif %}{% if end_date %}&end_date={{ end_date|urlencode }}{% endif %}{% if status %}&status={{ status|urlencode }}{% endif %}" class="btn btn-outline-primary mx-1">Next</a>
         {% endif %}
     </div>
     {% endif %}

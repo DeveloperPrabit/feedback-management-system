@@ -1,0 +1,28 @@
+{% extends 'admin_dashboard.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="container feedback-container mt-4">
+    <h2 class="text-center mb-4">Update Contact Information</h2>
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ contact.email|default:'' }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" name="phone" class="form-control" value="{{ contact.phone|default:'' }}" required>
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" name="address" class="form-control" value="{{ contact.address|default:'' }}" required>
+            </div>
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-primary">Update Contact</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock dashboard_content %}

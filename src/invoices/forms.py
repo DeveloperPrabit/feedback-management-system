@@ -1,24 +1,26 @@
 from django import forms
 from .models import Feedback
+from captcha.fields import CaptchaField
 
 class FeedbackForm(forms.ModelForm):
     RATING_CHOICES = (
-        ('excellent', 'उत्कृष्ट Excellent'),
-        ('good', 'राम्रो Good'),
-        ('poor', 'नराम्रो Poor'),
+        ('excellent', 'उत्कृष्ट'),
+        ('good', 'राम्रो'),
+        ('poor', 'नराम्रो'),
     )
+
     rating = forms.ChoiceField(choices=RATING_CHOICES, widget=forms.RadioSelect(attrs={'class': 'radio-group'}))
+    captcha = CaptchaField()
 
     class Meta:
         model = Feedback
         fields = [
             'name', 'address', 'mobile', 'email', 'rating',
-            'feedback_text', 'attachment', 'anonymous', 'feedback_date'
+            'feedback_text', 'attachment', 'anonymous', 'captcha'
         ]
         widgets = {
-            'feedback_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'feedback_text': forms.Textarea(attrs={'rows': 5, 'class': 'form-control'}),
-            'anonymous': forms.RadioSelect(choices=[(True, 'Yes'), (False, 'No')], attrs={'class': 'radio-group'}),
+            'anonymous': forms.RadioSelect(choices=[(True, 'हो'), (False, 'होइन')], attrs={'class': 'radio-group'}),
             'attachment': forms.FileInput(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'address': forms.TextInput(attrs={'class': 'form-control'}),
@@ -27,8 +29,11 @@ class FeedbackForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        if self.instance.pk:  # Existing feedback
+        if user and user.is_authenticated:
+            self.fields['name'].initial = user.full_name
+        if self.instance.pk:
             self.fields['anonymous'].initial = self.instance.anonymous
         if 'data' in kwargs and kwargs['data'].get('anonymous') == 'True':
             self.fields['name'].required = False

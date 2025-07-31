@@ -1,4 +1,4 @@
-{% extends "user_dashboard.html" %}
+{% extends "admin_dashboard.html" %}
 {% load static %}
 
 {% block dashboard_content %}
@@ -17,7 +17,7 @@
             <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="small-box bg-green">
                     <h2>{{ users }}</h2>
-                    <p>Total No. of Users</p>
+                    <p>Total Users</p>
                     <div class="icon">👥</div>
                     <a href="{% url 'users:view_users' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
@@ -27,7 +27,7 @@
             <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="small-box bg-yellow">
                     <h2>{{ feedbacks }}</h2>
-                    <p>Total No. of Feedbacks</p>
+                    <p>Total Feedbacks</p>
                     <div class="icon">📄</div>
                     <a href="{% url 'invoices:manage_feedbacks' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
@@ -37,18 +37,38 @@
             <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="small-box bg-red">
                     <h2>{{ pending_feedbacks }}</h2>
-                    <p>Total No. of Pending Feedbacks</p>
+                    <p>Total  Pending Feedbacks</p>
                     <div class="icon">⏳</div>
                     <a href="{% url 'invoices:manage_feedbacks' %}?status=pending" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
 
-            <!-- Total No. of Reviewed Feedbacks -->
+            <!-- Total No. of Solved Feedbacks -->
             <div class="col-lg-4 col-md-6 col-sm-12 mt-4">
                 <div class="small-box bg-blue">
-                    <h2>{{ reviewed_feedbacks }}</h2>
-                    <p>Total No. of Reviewed Feedbacks</p>
+                    <h2>{{ solved_feedbacks }}</h2>
+                    <p>Total Solved Feedbacks</p>
                     <div class="icon">✅</div>
+                    <a href="{% url 'invoices:manage_feedbacks' %}?status=solved" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Total No. of Closed Feedbacks -->
+            <div class="col-lg-4 col-md-6 col-sm-12 mt-4">
+                <div class="small-box bg-purple">
+                    <h2>{{ closed_feedbacks }}</h2>
+                    <p>Total Closed Feedbacks</p>
+                    <div class="icon">🔒</div>
+                    <a href="{% url 'invoices:manage_feedbacks' %}?status=closed" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Total No. of Reviewed Feedbacks -->
+            <div class="col-lg-4 col-md-6 col-sm-12 mt-4" style="background-color: #ada41aff;">
+                <div class="small-box bg-teal">
+                    <h2>{{ reviewed_feedbacks }}</h2>
+                    <p>Total Reviewed Feedbacks</p>
+                    <div class="icon">✔️</div>
                     <a href="{% url 'invoices:manage_feedbacks' %}?status=reviewed" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>

@@ -38,8 +38,7 @@
         .invoice-title {
             font-size: 25px;
             font-weight: bold;
-            color: #fff;
-            background: linear-gradient(45deg, #28a745, #218838);
+            color: black;
             padding: 10px 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(88, 87, 87, 0.2);
@@ -76,7 +75,7 @@
 <body>
     <div class="invoice-container">
         <header>
-            <img src="data:image/jpeg;base64,{{ logo_base64 }}" alt="Office Logo" class="logo">
+            <img src="{% if profile_picture_base64 %}data:image/jpeg;base64,{{ profile_picture_base64 }}{% elif logo_base64 %}data:image/jpeg;base64,{{ logo_base64 }}{% else %}data:image/jpeg;base64,{{ logo_base64 }}{% endif %}" alt="कार्यालय लोगो" class="logo">
             <h1 class="invoice-title">{{ office_name }}</h1>
         </header>
 
@@ -84,61 +83,59 @@
 
         <table>
             <tr>
-                <th>Serial Number</th>
+                <th>सि.नं.</th>
                 <td>{{ feedback.serial_number }}</td>
             </tr>
             <tr>
-                <th>Date</th>
-                <td>{{ feedback.feedback_date }}</td>
+                <th>सृजना मिति</th>
+                <td>{{ feedback.created_at|date:"Y-m-d H:i:s" }}</td>
             </tr>
             {% if not feedback.anonymous %}
                 <tr>
-                    <th>Name</th>
-                    <td>{{ feedback.name|default:"N/A" }}</td>
+                    <th>नाम</th>
+                    <td>{{ feedback.name|default:"अज्ञात" }}</td>
                 </tr>
                 <tr>
-                    <th>Address</th>
-                    <td>{{ feedback.address|default:"N/A" }}</td>
+                    <th>ठेगाना</th>
+                    <td>{{ feedback.address|default:"उपलब्ध छैन" }}</td>
                 </tr>
                 <tr>
-                    <th>Mobile</th>
-                    <td>{{ feedback.mobile|default:"N/A" }}</td>
+                    <th>मोबाइल</th>
+                    <td>{{ feedback.mobile|default:"उपलब्ध छैन" }}</td>
                 </tr>
                 <tr>
-                    <th>Email</th>
-                    <td>{{ feedback.email|default:"N/A" }}</td>
+                    <th>ईमेल</th>
+                    <td>{{ feedback.email|default:"उपलब्ध छैन" }}</td>
                 </tr>
             {% else %}
                 <tr>
-                    <th>Name</th>
-                    <td>Anonymous</td>
+                    <th>नाम</th>
+                    <td>गोप्य</td>
                 </tr>
             {% endif %}
             <tr>
-                <th>Rating</th>
+                <th>रेटिङ</th>
                 <td>{{ feedback.get_rating_display }}</td>
             </tr>
             <tr>
-                <th>Feedback</th>
+                <th>प्रतिक्रिया</th>
                 <td>{{ feedback.feedback_text }}</td>
             </tr>
             {% if feedback.attachment %}
                 <tr>
-                    <th>Attachment</th>
-                    <td>Included (view in system)</td>
+                    <th>संलग्न फाइल</th>
+                    <td>सिस्टममा उपलब्ध</td>
                 </tr>
             {% endif %}
             <tr>
-                <th>Status</th>
+                <th>स्थिति</th>
                 <td>{{ feedback.get_status_display }}</td>
             </tr>
             <tr>
-                <th>Generated</th>
+                <th>उत्पन्न मिति</th>
                 <td>{{ generated_date }}</td>
             </tr>
         </table>
-
-        <p class="note">तपाईको अमुल्य सुझावको लागि धन्यबाद । सुझावको बिवरण जाच्छ गरी आवश्यक प्रकृयामा जानेछौ ।</p>
     </div>
 </body>
 </html>

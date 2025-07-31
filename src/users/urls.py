@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+
 app_name = 'users'
 
 urlpatterns = [
@@ -20,4 +21,6 @@ urlpatterns = [
     path('verify-otp/', views.VerifyOTPView.as_view(), name='verify_otp'),
     path('reset-password/', views.ResetPasswordView.as_view(), name='reset_password'),
     path('contact/', views.ContactView.as_view(), name='contact'),
+    path('contact/update/', views.UpdateContactView.as_view(), name='update_contact'),
+    path('manage-users/toggle-active/<uuid:user_uuid>/', views.ToggleUserActiveView.as_view(), name='toggle_user_active'),
 ]

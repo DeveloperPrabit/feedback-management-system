@@ -10,7 +10,10 @@ SECRET_KEY = 'django-insecure-y0l0zy@)rr)wre6g0mh+v&&ip0&1dtnx++q%rq!i52u)t%y(2a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Set to False in production
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'feedboxs.com', 'www.feedboxs.com']  # Add your domain here
+
+# Define SITE_URL for production
+SITE_URL = 'https://feedboxs.com'  # Replace with your actual domain
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100MB
@@ -27,6 +30,7 @@ INSTALLED_APPS = [
     'users',
     'tenants',
     'invoices',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +56,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context_processors.feedback_context',  # Custom context processor for feedback
+                'users.context_processors.site_settings',  # Custom context processor for SITE_URL
             ],
         },
     },
@@ -67,6 +73,17 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+    # Uncomment and configure for PostgreSQL or other databases
+     # PostgreSQL (for deployment)
+    # Uncomment below when deploying
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'your_db_name',
+    #     'USER': 'your_db_user',
+    #     'PASSWORD': 'your_db_password',
+    #     'HOST': 'localhost',  # or your production DB host
+    #     'PORT': '5432',
+    # }
 }
 
 # Password validation
@@ -99,6 +116,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Login URL for redirects
+LOGIN_URL = 'users:login'
+
 # Logging configuration
 LOGGING = {
     'version': 1,
@@ -128,6 +148,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'captcha': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     },
 }
 
@@ -136,9 +161,16 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'bhadahub@gmail.com'  # Replace with your email
-EMAIL_HOST_PASSWORD = 'uaqaepvhhhlbzagg'  # Replace with your email password
-DEFAULT_FROM_EMAIL = 'bhadahub@gmail.com'  # Replace with your email
+EMAIL_HOST_USER = 'noreplyfeedbox@gmail.com'  # Replace with your email
+EMAIL_HOST_PASSWORD = 'ruxc ugww htwp vvgq'  # Replace with your email password
+DEFAULT_FROM_EMAIL = ' noreplyfeedbox@gmail.com'  # Replace with your email
+
+# CAPTCHA settings
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_null',)
+CAPTCHA_LENGTH = 4
+CAPTCHA_IMAGE_SIZE = (150, 50)
+CAPTCHA_TIMEOUT = 15  # CAPTCHA validity in minutes
 
 # Jazzmin settings
 JAZZMIN_SETTINGS = {
@@ -178,5 +210,3 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
 }
-
-LOGIN_URL = "/"

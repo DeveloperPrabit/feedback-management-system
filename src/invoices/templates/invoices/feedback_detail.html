@@ -1,4 +1,4 @@
-{% extends "user_dashboard.html" %}
+{% extends 'admin_dashboard.html' %}
 {% load static %}
 
 {% block css %}
@@ -9,7 +9,7 @@
 <div class="feedback-container">
     <h2>Feedback Details</h2>
     <p><strong>Serial Number:</strong> {{ feedback.serial_number }}</p>
-    <p><strong>Date:</strong> {{ feedback.feedback_date }}</p>
+    <p><strong>Date & Time:</strong> {{ feedback.created_at|date:"Y-m-d h:i A" }}</p>
     {% if not feedback.anonymous %}
         <p><strong>Name:</strong> {{ feedback.name|default:"N/A" }}</p>
         <p><strong>Address:</strong> {{ feedback.address|default:"N/A" }}</p>
@@ -26,14 +26,14 @@
     <p><strong>Status:</strong> {{ feedback.get_status_display }}</p>
     <p><strong>PDF:</strong> <a href="{{ pdf_url }}">Download PDF</a></p>
 
-    <form method="POST" action="{% url 'invoices:update_feedback_status' feedback.uuid %}">
+    <form method="POST" action="{% url 'invoices:update_status' feedback_uuid=feedback.uuid %}">
         {% csrf_token %}
-        <select name="status">
-            <option value="pending" {% if feedback.status == 'pending' %}selected{% endif %}>Pending</option>
-            <option value="reviewed" {% if feedback.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
-            <option value="closed" {% if feedback.status == 'closed' %}selected{% endif %}>Closed</option>
-        </select>
-        <button type="submit">Update Status</button>
+        {% comment %} <select name="status">
+    <option value="pending" {% if feedback.status == 'pending' %}selected{% endif %}>Pending</option>
+    <option value="solved" {% if feedback.status == 'solved' %}selected{% endif %}>Solved</option>
+    <option value="closed" {% if feedback.status == 'closed' %}selected{% endif %}>Closed</option>
+</select>
+        <button type="submit">Update Status</button> {% endcomment %}
     </form>
 </div>
 {% endblock dashboard_content %}
